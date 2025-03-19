@@ -11,6 +11,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class SpawnCommand {
+    //CLASS IS FOR TESTING, REMOVE LATER
+
     private static int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         MobSpawner.spawnMobGroup(InvasionMobConfig.mobGroups.get(0), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
         return 1;

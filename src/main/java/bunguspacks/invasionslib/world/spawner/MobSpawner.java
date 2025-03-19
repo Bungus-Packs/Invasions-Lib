@@ -24,6 +24,7 @@ public class MobSpawner implements Spawner {
         return 0;
     }
 
+    //spawn mob in donut around specified position with no associated director
     public static void spawnMob(String mobid, ServerWorld world, BlockPos pos) {
         EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobid));
         MobEntity mob = (MobEntity) mobType.create(world);
@@ -34,6 +35,7 @@ public class MobSpawner implements Spawner {
         }
     }
 
+    //spawn mob in donut around specified position and notify director to start tracking it
     public static void spawnMob(String mobid, ServerWorld world, BlockPos pos, InvasionDirector director, float cost) {
         EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobid));
         MobEntity mob = (MobEntity) mobType.create(world);
@@ -41,39 +43,43 @@ public class MobSpawner implements Spawner {
             BlockPos spawnPos = getBlockPosWithDistance(pos, world, 5, 10);
             mob.refreshPositionAndAngles(spawnPos, 0, 0);
             world.spawnEntity(mob);
-            director.startTracking(mob,cost);
+            director.startTracking(mob, cost);
         }
     }
 
     public static void spawnMobGroup(InvasionMobConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director) {
-
         List<InvasionMobConfig.MobUnitData> unitData = data.mobs();
-
         int totalCredits = data.cost();
         Random random = world.random;
         List<Integer> unitCounts = new ArrayList<>();
-        int unitCreditWeightSum = 0;
 
+        //predetermine random unit counts so that credits can be appropriately distributed
+        int unitCreditWeightSum = 0;
         for (int i = 0; i < unitData.size(); i++) {
             int unitCount = random.nextBetween(unitData.get(i).minCount(), unitData.get(i).maxCount());
             unitCreditWeightSum += unitCount * unitData.get(i).creditWeight();
             unitCounts.add(unitCount);
         }
 
+        //if function was not passed a director to spawn with, spawn mobs without an associated cost.
         if (director == null) {
             for (int i = 0; i < unitData.size(); i++) {
                 for (int j = 0; j < unitCounts.get(i); j++)
                     spawnMob(unitData.get(i).mobid(), world, pos);
             }
-        }else{
+        }
+
+        //if function was passed a director, spawn mobs with associated cost
+        else {
             for (int i = 0; i < unitData.size(); i++) {
                 for (int j = 0; j < unitCounts.get(i); j++)
-                    spawnMob(unitData.get(i).mobid(), world, pos, director, ((float)unitData.get(i).creditWeight()*totalCredits/unitCreditWeightSum));
+                    spawnMob(unitData.get(i).mobid(), world, pos, director, ((float) unitData.get(i).creditWeight() * totalCredits / unitCreditWeightSum));
             }
         }
 
     }
 
+    //black box function to generate a random position within a donut-shaped region around a center position
     private static BlockPos getBlockPosWithDistance(BlockPos pos, World world, int distanceMin, int distanceMax) {
         final Random random = world.random;
         double d = 0;

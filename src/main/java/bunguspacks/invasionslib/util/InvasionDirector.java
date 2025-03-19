@@ -8,48 +8,55 @@ import net.minecraft.world.World;
 
 
 public class InvasionDirector {
-    private final InvasionMobObserver observer=new InvasionMobObserver();
+    private final InvasionMobObserver observer = new InvasionMobObserver();
     private float credits;
     private float creditsKilled;
     private float livingCredits;
     private float creditRate;
     private final InvasionDirectorConfig.DirectorProfileData profile;
 
-    public InvasionDirector(float c, World world){
-        creditRate=c;
-        credits=0;
-        creditsKilled=0;
-        livingCredits=0;
-        final Random random=world.random;
-        float profileRandom=random.nextFloat();
-        float chanceCumSum=0f;
-        InvasionDirectorConfig.DirectorProfileData out=null;
-        int i=0;
-        while(chanceCumSum<profileRandom){
-            out=InvasionDirectorConfig.profiles.get(i);
-            chanceCumSum+=out.chance();
+    //this constructor chooses a weighted random profile
+    public InvasionDirector(float c, World world) {
+        creditRate = c;
+        credits = 0;
+        creditsKilled = 0;
+        livingCredits = 0;
+        final Random random = world.random;
+        float profileRandom = random.nextFloat();
+        float chanceCumSum = 0f;
+        InvasionDirectorConfig.DirectorProfileData out = null;
+        int i = 0;
+        while (chanceCumSum < profileRandom) {
+            out = InvasionDirectorConfig.profiles.get(i);
+            chanceCumSum += out.chance();
             i++;
         }
-        profile=out;
-    }
-    public InvasionDirector(float c, World world, InvasionDirectorConfig.DirectorProfileData profile){
-        creditRate=c;
-        credits=0;
-        creditsKilled=0;
-        livingCredits=0;
-        this.profile=profile;
+        profile = out;
     }
 
-    public void startTracking(MobEntity m, float cost){
-        observer.addMob(m,cost);
-        livingCredits+=cost;
+    //this constructor chooses a set profile
+    public InvasionDirector(float c, World world, InvasionDirectorConfig.DirectorProfileData profile) {
+        creditRate = c;
+        credits = 0;
+        creditsKilled = 0;
+        livingCredits = 0;
+        this.profile = profile;
     }
-    public void checkMobs(){
-        float thisKill=observer.checkMobs();
-        creditsKilled+=thisKill;
-        livingCredits-=thisKill;
+
+    //add a mob to the list of "invasion mobs"
+    public void startTracking(MobEntity m, float cost) {
+        observer.addMob(m, cost);
+        livingCredits += cost;
     }
-    public void updateRate(){
+
+    //check over all invasion mobs, modifying living and killed credit totals appropriately
+    public void checkMobs() {
+        float thisKill = observer.checkMobs();
+        creditsKilled += thisKill;
+        livingCredits -= thisKill;
+    }
+
+    public void updateRate() {
 
     }
 }

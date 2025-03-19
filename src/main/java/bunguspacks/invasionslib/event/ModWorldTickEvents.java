@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModWorldTickEvents {
-    public ModWorldTickEvents(InvasionDirectorUpdater d){
-        ServerTickEvents.END_WORLD_TICK.register((world)->d.updateDirectors());
+    public ModWorldTickEvents(InvasionDirectorUpdater d) {
+        //register world tick event for director updater
+        ServerTickEvents.END_WORLD_TICK.register((world) -> d.updateDirectors());
     }
 
 }

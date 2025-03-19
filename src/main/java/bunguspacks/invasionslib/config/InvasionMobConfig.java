@@ -15,18 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InvasionMobConfig {
+    //config filepath
     private static final File CONFIG = new File("config/invasionslib/mob_group_config.json");
 
+    //record for storing data about a mob group
     public record MobGroupData(String name, int weight, int cost, List<MobUnitData> mobs) {
     }
 
+    //record for storing data about a mob unit (a subgroup consisting of a single type of mob)
     public record MobUnitData(String mobid, int minCount, int maxCount, int creditWeight) {
     }
 
     public static final List<MobGroupData> mobGroups = new ArrayList<>();
 
-
+    //called on init
     public static void loadConfig() {
+        //make default config if none exists
         if (!CONFIG.exists()) {
             CONFIG.getParentFile().mkdirs();
             try (FileWriter writer = new FileWriter(CONFIG)) {
@@ -56,9 +60,7 @@ public class InvasionMobConfig {
 
                 basicMobGroup.add("units", basicMobUnitData);
 
-
                 mobGroupData.add(basicMobGroup);
-
 
                 JsonObject defaultConfig = new JsonObject();
                 defaultConfig.add("mobGroups", mobGroupData);
@@ -85,8 +87,8 @@ public class InvasionMobConfig {
                     String mobid = unit.get("mobid").getAsString();
                     int minCount = unit.get("minCount").getAsInt();
                     int maxCount = unit.get("maxCount").getAsInt();
-                    int creditWeight=unit.get("creditWeight").getAsInt();
-                    units.add(new MobUnitData(mobid, minCount, maxCount,creditWeight));
+                    int creditWeight = unit.get("creditWeight").getAsInt();
+                    units.add(new MobUnitData(mobid, minCount, maxCount, creditWeight));
                 }
                 mobGroups.add(new MobGroupData(name, weight, cost, units));
             }

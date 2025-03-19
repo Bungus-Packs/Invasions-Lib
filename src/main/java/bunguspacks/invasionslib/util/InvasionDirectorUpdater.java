@@ -6,18 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InvasionDirectorUpdater {
-    private List<InvasionDirector> directors=new ArrayList<>();
-    public InvasionDirectorUpdater(){}
-    public void updateDirectors(){
-        for(InvasionDirector d:directors){
+    private List<InvasionDirector> directors = new ArrayList<>();
+
+    public InvasionDirectorUpdater() {
+    }
+
+    public void updateDirectors() {
+        //have directors check their mobs every tick
+        for (InvasionDirector d : directors) {
             d.checkMobs();
             d.updateRate();
         }
     }
-    public void addDirector(InvasionDirector d){
+
+    public void addDirector(InvasionDirector d) {
         directors.add(d);
     }
-    public List<InvasionDirector> getDirectors(){
+
+    public List<InvasionDirector> getDirectors() {
         return directors;
     }
 }

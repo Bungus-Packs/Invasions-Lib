@@ -8,27 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InvasionMobObserver {
-    private List<Pair<MobEntity,Float>> activeMobs=new ArrayList<>();
+    private List<Pair<MobEntity, Float>> activeMobs = new ArrayList<>();
 
-    public InvasionMobObserver(){
+    public InvasionMobObserver() {}
 
+    public void addMob(MobEntity m, float cost) {
+        activeMobs.add(Pair.of(m, cost));
     }
-    public void addMob(MobEntity m, float cost){
-        activeMobs.add(Pair.of(m,cost));
-    }
 
-    public float checkMobs(){
-
-        float out=0;
-        for(int i=0;i<activeMobs.size();i++){
-            MobEntity m=activeMobs.get(i).first();
-
-            if(m==null||!m.isAlive()){
-                out+=activeMobs.get(i).second();
+    public float checkMobs() {
+        //iterate over all mobs, return the number found dead or missing and remove from checking
+        float out = 0;
+        for (int i = 0; i < activeMobs.size(); i++) {
+            MobEntity m = activeMobs.get(i).first();
+            if (m == null || !m.isAlive()) {
+                out += activeMobs.get(i).second();
                 activeMobs.remove(i);
                 i--;
             }
-        }return out;
+        }
+        return out;
     }
 
 
