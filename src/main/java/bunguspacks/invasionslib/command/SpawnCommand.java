@@ -1,5 +1,6 @@
 package bunguspacks.invasionslib.command;
 
+import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.world.spawner.MobSpawner;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,8 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class SpawnCommand {
     private static int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        for(int i=0;i<50;i++)
-        MobSpawner.spawnMob(context.getSource().getPlayer().getServerWorld(),context.getSource().getPlayer().getBlockPos());
+        MobSpawner.spawnMobGroup(InvasionMobConfig.mobGroups.get(0),context.getSource().getPlayer().getServerWorld(),context.getSource().getPlayer().getBlockPos());
         return 1;
     }
 

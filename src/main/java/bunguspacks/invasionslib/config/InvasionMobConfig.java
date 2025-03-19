@@ -23,28 +23,36 @@ public class InvasionMobConfig {
     public static void loadConfig(){
         if(!CONFIG.exists()){
             try(FileWriter writer=new FileWriter(CONFIG)){
-                JsonArray zombieGroupData=new JsonArray();
+                JsonArray basicMobGroupData=new JsonArray();
 
-                JsonObject zombieGroup=new JsonObject();
-                zombieGroup.addProperty("name","zombieGroup");
-                zombieGroup.addProperty("weight",100);
-                zombieGroup.addProperty("cost",10);
+                JsonObject basicMobGroup=new JsonObject();
+                basicMobGroup.addProperty("name","zombieGroup");
+                basicMobGroup.addProperty("weight",100);
+                basicMobGroup.addProperty("cost",10);
 
-                JsonArray zombieUnitData=new JsonArray();
+                JsonArray basicMobUnitData=new JsonArray();
 
                 JsonObject zombieUnit=new JsonObject();
                 zombieUnit.addProperty("mobid","minecraft:zombie");
                 zombieUnit.addProperty("minCount",2);
                 zombieUnit.addProperty("maxCount",4);
-                zombieUnitData.add(zombieUnit);
+                basicMobUnitData.add(zombieUnit);
 
-                zombieGroup.add("units",zombieUnitData);
+                JsonObject skeletonUnit=new JsonObject();
+                skeletonUnit.addProperty("mobid","minecraft:skeleton");
+                skeletonUnit.addProperty("minCount",5);
+                skeletonUnit.addProperty("maxCount",9);
+                basicMobUnitData.add(skeletonUnit);
 
-                zombieGroupData.add(zombieGroup);
+                basicMobGroup.add("units",basicMobUnitData);
+
+
+
+                basicMobGroupData.add(basicMobGroup);
 
 
                 JsonObject defaultConfig=new JsonObject();
-                defaultConfig.add("mobGroups",zombieGroupData);
+                defaultConfig.add("mobGroups",basicMobGroupData);
 
                 new GsonBuilder().setPrettyPrinting().create().toJson(defaultConfig,writer);
             }catch(IOException e){

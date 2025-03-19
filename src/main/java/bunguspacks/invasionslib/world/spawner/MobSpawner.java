@@ -19,8 +19,8 @@ public class MobSpawner implements Spawner{
         return 0;
     }
 
-    public static void spawnMob(ServerWorld world, BlockPos pos){
-        EntityType<?> mobType= Registries.ENTITY_TYPE.get(new Identifier("minecraft:zombie"));
+    public static void spawnMob(String mobid, ServerWorld world, BlockPos pos){
+        EntityType<?> mobType= Registries.ENTITY_TYPE.get(new Identifier(mobid));
         MobEntity mob=(MobEntity)mobType.create(world);
         if(mob!=null) {
             BlockPos spawnPos=getBlockPosWithDistance(pos,world,5,10);
@@ -31,9 +31,12 @@ public class MobSpawner implements Spawner{
 
     public static void spawnMobGroup(InvasionMobConfig.MobGroupData data, ServerWorld world, BlockPos pos){
         List<InvasionMobConfig.MobUnitData> unitData=data.mobs();
-        for(int i=0;i<unitData.size();i++){
-            Random random=world.random;
-
+        for (InvasionMobConfig.MobUnitData currentUnitData : unitData) {
+            Random random = world.random;
+            int unitCount = random.nextBetween(currentUnitData.minCount(), currentUnitData.maxCount());
+            for(int j=0;j<unitCount;j++){
+                spawnMob(currentUnitData.mobid(),world,pos);
+            }
         }
     }
 
