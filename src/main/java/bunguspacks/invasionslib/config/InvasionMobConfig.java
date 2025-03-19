@@ -31,7 +31,7 @@ public class InvasionMobConfig {
             CONFIG.getParentFile().mkdirs();
             try (FileWriter writer = new FileWriter(CONFIG)) {
 
-                JsonArray basicMobGroupData = new JsonArray();
+                JsonArray mobGroupData = new JsonArray();
 
                 JsonObject basicMobGroup = new JsonObject();
                 basicMobGroup.addProperty("name", "zombieGroup");
@@ -57,11 +57,11 @@ public class InvasionMobConfig {
                 basicMobGroup.add("units", basicMobUnitData);
 
 
-                basicMobGroupData.add(basicMobGroup);
+                mobGroupData.add(basicMobGroup);
 
 
                 JsonObject defaultConfig = new JsonObject();
-                defaultConfig.add("mobGroups", basicMobGroupData);
+                defaultConfig.add("mobGroups", mobGroupData);
 
                 new GsonBuilder().setPrettyPrinting().create().toJson(defaultConfig, writer);
             } catch (IOException e) {

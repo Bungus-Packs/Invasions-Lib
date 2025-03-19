@@ -26,10 +26,10 @@ public class InvasionsLib implements ModInitializer {
         LOGGER.info("Initializing mod configs for " + MOD_ID);
         InvasionMobConfig.loadConfig();
         InvasionDirectorConfig.loadConfig();
-        System.out.println(InvasionMobConfig.mobGroups);
 
         LOGGER.info("Initializing mod events for "+MOD_ID);
         new ModWorldTickEvents(invasionDirectorUpdater);
-        invasionDirectorUpdater.addDirector(new InvasionDirector(10000));
+
+
     }
 }

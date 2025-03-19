@@ -13,49 +13,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InvasionDirectorConfig {
-    private static final File CONFIG = new File("config/invasionslib/director_config.json");
+    private static final File CONFIG = new File("config/invasionslib/profile_config.json");
+    public static int TOTAL_PROFILE_WEIGHT=0;
 
-    public record MobGroupData(String name, int weight, int cost, List<MobUnitData> mobs) {
+    public record DirectorProfileData(String name, float chance, float baselineDensity, float waveFraction, List<DirectorWaveData> waves) {
     }
 
-    public record MobUnitData(String mobid, int minCount, int maxCount) {
+    public record DirectorWaveData(float progressPoint, float sizeFraction) {
     }
 
-    public static final List<MobGroupData> mobGroups = new ArrayList<>();
+
+    public static List<DirectorProfileData> profiles=new ArrayList<>();
 
 
     public static void loadConfig() {
         if (!CONFIG.exists()) {
             try (FileWriter writer = new FileWriter(CONFIG)) {
-                JsonArray basicMobGroupData = new JsonArray();
-
-                JsonObject basicMobGroup = new JsonObject();
-                basicMobGroup.addProperty("name", "zombieGroup");
-                basicMobGroup.addProperty("weight", 100);
-                basicMobGroup.addProperty("cost", 10);
-
-                JsonArray basicMobUnitData = new JsonArray();
-
-                JsonObject zombieUnit = new JsonObject();
-                zombieUnit.addProperty("mobid", "minecraft:zombie");
-                zombieUnit.addProperty("minCount", 2);
-                zombieUnit.addProperty("maxCount", 4);
-                basicMobUnitData.add(zombieUnit);
-
-                JsonObject skeletonUnit = new JsonObject();
-                skeletonUnit.addProperty("mobid", "minecraft:skeleton");
-                skeletonUnit.addProperty("minCount", 5);
-                skeletonUnit.addProperty("maxCount", 9);
-                basicMobUnitData.add(skeletonUnit);
-
-                basicMobGroup.add("units", basicMobUnitData);
+                JsonArray profileData = new JsonArray();
 
 
-                basicMobGroupData.add(basicMobGroup);
+                JsonObject hellspawnProfile=new JsonObject();
+                hellspawnProfile.addProperty("name","hellspawn");
+                hellspawnProfile.addProperty("weight",1);
+                hellspawnProfile.addProperty("baselineDensity",1.0f);
+                hellspawnProfile.addProperty("waveFraction",1.0f);
+                JsonArray hellspawnWaves=new JsonArray();
+                JsonObject hellspawnWave1=new JsonObject();
+                hellspawnWave1.addProperty("progressPoint",0.0f);
+                hellspawnWave1.addProperty("size",1);
+                hellspawnWaves.add(hellspawnWave1);
 
+                hellspawnProfile.add("waves",hellspawnWaves);
+                profileData.add(hellspawnProfile);
+
+                JsonObject classicProfile=new JsonObject();
+                classicProfile.addProperty("name","classic");
+                classicProfile.addProperty("weight",2);
+                classicProfile.addProperty("baselineDensity",1.0f);
+                classicProfile.addProperty("waveFraction",0.4f);
+                JsonArray classicWaves=new JsonArray();
+                JsonObject classicWave1=new JsonObject();
+                classicWave1.addProperty("progressPoint",0.4f);
+                classicWave1.addProperty("size",2);
+                classicWaves.add(classicWave1);
+                JsonObject classicWave2=new JsonObject();
+                classicWave2.addProperty("progressPoint",0.7f);
+                classicWave2.addProperty("size",3);
+                classicWaves.add(classicWave2);
+                JsonObject classicWave3=new JsonObject();
+                classicWave3.addProperty("progressPoint",1.0f);
+                classicWave3.addProperty("size",4);
+                classicWaves.add(classicWave3);
+
+                classicProfile.add("waves",classicWaves);
+                profileData.add(classicProfile);
 
                 JsonObject defaultConfig = new JsonObject();
-                defaultConfig.add("mobGroups", basicMobGroupData);
+                defaultConfig.add("profiles", profileData);
 
                 new GsonBuilder().setPrettyPrinting().create().toJson(defaultConfig, writer);
             } catch (IOException e) {
@@ -65,24 +79,34 @@ public class InvasionDirectorConfig {
 
         try (FileReader reader = new FileReader(CONFIG)) {
             JsonObject config = new Gson().fromJson(reader, JsonObject.class);
-            JsonArray groups = config.getAsJsonArray("mobGroups");
-            mobGroups.clear();
-            for (int i = 0; i < groups.size(); i++) {
-                JsonObject group = groups.get(i).getAsJsonObject();
-                String name = group.get("name").getAsString();
-                int weight = group.get("weight").getAsInt();
-                int cost = group.get("cost").getAsInt();
-                JsonArray mobUnits = group.get("units").getAsJsonArray();
-                List<MobUnitData> units = new ArrayList<>();
-                for (int j = 0; j < mobUnits.size(); j++) {
-                    JsonObject unit = mobUnits.get(j).getAsJsonObject();
-                    String mobid = unit.get("mobid").getAsString();
-                    int minCount = unit.get("minCount").getAsInt();
-                    int maxCount = unit.get("maxCount").getAsInt();
-                    units.add(new MobUnitData(mobid, minCount, maxCount));
-                }
-                mobGroups.add(new MobGroupData(name, weight, cost, units));
+            JsonArray configProfiles=config.getAsJsonArray("profiles");
+            profiles.clear();
+            int profileWeightSum=0;
+            for(int i=0;i<configProfiles.size();i++) {
+                JsonObject profile = configProfiles.get(i).getAsJsonObject();
+                profileWeightSum+=profile.get("weight").getAsInt();
             }
+            for(int i=0;i<configProfiles.size();i++){
+                JsonObject profile=configProfiles.get(i).getAsJsonObject();
+                String name=profile.get("name").getAsString();
+                float chance=((float)(profile.get("weight").getAsInt()))/profileWeightSum;
+                float baselineDensity=profile.get("baselineDensity").getAsFloat();
+                float waveFraction=profile.get("waveFraction").getAsFloat();
+                JsonArray waves=profile.getAsJsonArray("waves");
+                List<DirectorWaveData> waveData=new ArrayList<>();
+                int waveSizeSum=0;
+                for(int j=0;j<waves.size();j++) {
+                    JsonObject wave = waves.get(j).getAsJsonObject();
+                    waveSizeSum+=wave.get("size").getAsInt();
+                }
+                for(int j=0;j<waves.size();j++) {
+                    JsonObject wave = waves.get(j).getAsJsonObject();
+                    float progressPoint = wave.get("progressPoint").getAsFloat();
+                    float sizeFraction = ((float)wave.get("size").getAsInt())/waveSizeSum;
+                    waveData.add(new DirectorWaveData(progressPoint, sizeFraction));
+                }profiles.add(new DirectorProfileData(name,chance,baselineDensity,waveFraction,waveData));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
