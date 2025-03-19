@@ -1,8 +1,12 @@
 package bunguspacks.invasionslib.world.spawner;
 
 import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.mixin.MobEntityAccessor;
+import bunguspacks.invasionslib.mobbehaviors.MobGoal;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -26,6 +30,10 @@ public class MobSpawner implements Spawner {
         if (mob != null) {
             BlockPos spawnPos = getBlockPosWithDistance(pos, world, 5, 10);
             mob.refreshPositionAndAngles(spawnPos, 0, 0);
+            if (mob.getClass().isAssignableFrom(PathAwareEntity.class)){
+                GoalSelector goalSelector = ((MobEntityAccessor)mob).getGoalSelector();
+                goalSelector.add(1, new MobGoal<PathAwareEntity>((PathAwareEntity) mob, 20));
+            }
             world.spawnEntity(mob);
         }
     }

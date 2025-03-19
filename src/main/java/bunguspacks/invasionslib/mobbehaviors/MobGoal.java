@@ -19,8 +19,9 @@ public class MobGoal<T extends PathAwareEntity> extends Goal {
     int targetRange = 0;
     GoalSelector goalSelector;
     ActiveTargetGoal<PlayerEntity> fightPlayer;
-    //Ideally range is infinite, but i am going to set a "reasonable number" in its place
+    //Ideally range is infinite, but I am going to set a "reasonable number" in its place
     GoToWalkTargetGoal attackBase = new GoToWalkTargetGoal((PathAwareEntity)this.entity, this.entity.speed);
+    BlockPos beaconLocation;
 
     public MobGoal(PathAwareEntity entity){
         this.entity = entity;
@@ -74,7 +75,7 @@ public class MobGoal<T extends PathAwareEntity> extends Goal {
                     goalSelector.remove(fightPlayer);
                 }
                 goalSelector.remove(fightPlayer);
-                entity.setPositionTarget(new BlockPos(0,0,0), 1);
+                entity.setPositionTarget(new BlockPos(0,77,0), 1000);
             }
         }
     }
