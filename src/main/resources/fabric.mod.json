@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "invasionslib",
+  "version": "${version}",
+  "name": "Invasions Lib",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/invasionslib/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "bunguspacks.invasionslib.client.InvasionsLibClient"
+    ],
+    "main": [
+      "bunguspacks.invasionslib.InvasionsLib"
+    ]
+  },
+  "mixins": [
+    "invasionslib.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
