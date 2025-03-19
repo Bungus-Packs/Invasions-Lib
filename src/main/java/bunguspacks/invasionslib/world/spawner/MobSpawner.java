@@ -1,7 +1,6 @@
 package bunguspacks.invasionslib.world.spawner;
 
-import bunguspacks.invasionslib.InvasionsLib;
-import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -47,8 +46,8 @@ public class MobSpawner implements Spawner {
         }
     }
 
-    public static void spawnMobGroup(InvasionMobConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director) {
-        List<InvasionMobConfig.MobUnitData> unitData = data.mobs();
+    public static void spawnMobGroup(MobGroupConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director) {
+        List<MobGroupConfig.MobUnitData> unitData = data.mobs();
         int totalCredits = data.cost();
         Random random = world.random;
         List<Integer> unitCounts = new ArrayList<>();

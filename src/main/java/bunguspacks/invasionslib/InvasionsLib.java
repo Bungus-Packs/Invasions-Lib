@@ -3,8 +3,8 @@ package bunguspacks.invasionslib;
 import bunguspacks.invasionslib.command.SpawnCommand;
 import bunguspacks.invasionslib.config.InvasionDirectorConfig;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.event.ModWorldTickEvents;
-import bunguspacks.invasionslib.util.InvasionDirector;
 import bunguspacks.invasionslib.util.InvasionDirectorUpdater;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -24,8 +24,9 @@ public class InvasionsLib implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(SpawnCommand::register);
 
         LOGGER.info("Initializing mod configs for " + MOD_ID);
-        InvasionMobConfig.loadConfig();
+        MobGroupConfig.loadConfig();
         InvasionDirectorConfig.loadConfig();
+        InvasionMobConfig.loadConfig();
 
         LOGGER.info("Initializing mod events for " + MOD_ID);
         new ModWorldTickEvents(invasionDirectorUpdater);
