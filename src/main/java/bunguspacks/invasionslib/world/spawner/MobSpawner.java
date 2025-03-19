@@ -1,6 +1,8 @@
 package bunguspacks.invasionslib.world.spawner;
 
+import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.Registries;
@@ -11,7 +13,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.Spawner;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MobSpawner implements Spawner {
@@ -30,15 +34,44 @@ public class MobSpawner implements Spawner {
         }
     }
 
-    public static void spawnMobGroup(InvasionMobConfig.MobGroupData data, ServerWorld world, BlockPos pos) {
+    public static void spawnMob(String mobid, ServerWorld world, BlockPos pos, InvasionDirector director, float cost) {
+        EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobid));
+        MobEntity mob = (MobEntity) mobType.create(world);
+        if (mob != null) {
+            BlockPos spawnPos = getBlockPosWithDistance(pos, world, 5, 10);
+            mob.refreshPositionAndAngles(spawnPos, 0, 0);
+            world.spawnEntity(mob);
+            director.startTracking(mob,cost);
+        }
+    }
+
+    public static void spawnMobGroup(InvasionMobConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director) {
+
         List<InvasionMobConfig.MobUnitData> unitData = data.mobs();
-        for (InvasionMobConfig.MobUnitData currentUnitData : unitData) {
-            Random random = world.random;
-            int unitCount = random.nextBetween(currentUnitData.minCount(), currentUnitData.maxCount());
-            for (int j = 0; j < unitCount; j++) {
-                spawnMob(currentUnitData.mobid(), world, pos);
+
+        int totalCredits = data.cost();
+        Random random = world.random;
+        List<Integer> unitCounts = new ArrayList<>();
+        int unitCreditWeightSum = 0;
+
+        for (int i = 0; i < unitData.size(); i++) {
+            int unitCount = random.nextBetween(unitData.get(i).minCount(), unitData.get(i).maxCount());
+            unitCreditWeightSum += unitCount * unitData.get(i).creditWeight();
+            unitCounts.add(unitCount);
+        }
+
+        if (director == null) {
+            for (int i = 0; i < unitData.size(); i++) {
+                for (int j = 0; j < unitCounts.get(i); j++)
+                    spawnMob(unitData.get(i).mobid(), world, pos);
+            }
+        }else{
+            for (int i = 0; i < unitData.size(); i++) {
+                for (int j = 0; j < unitCounts.get(i); j++)
+                    spawnMob(unitData.get(i).mobid(), world, pos, director, ((float)unitData.get(i).creditWeight()*totalCredits/unitCreditWeightSum));
             }
         }
+
     }
 
     private static BlockPos getBlockPosWithDistance(BlockPos pos, World world, int distanceMin, int distanceMax) {

@@ -9,18 +9,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvasionMobConfig {
-    private static final File CONFIG = new File("config/invasionslib/mob_group_config.json");
+public class InvasionDirectorConfig {
+    private static final File CONFIG = new File("config/invasionslib/director_config.json");
 
     public record MobGroupData(String name, int weight, int cost, List<MobUnitData> mobs) {
     }
 
-    public record MobUnitData(String mobid, int minCount, int maxCount, int creditWeight) {
+    public record MobUnitData(String mobid, int minCount, int maxCount) {
     }
 
     public static final List<MobGroupData> mobGroups = new ArrayList<>();
@@ -28,9 +26,7 @@ public class InvasionMobConfig {
 
     public static void loadConfig() {
         if (!CONFIG.exists()) {
-            CONFIG.getParentFile().mkdirs();
             try (FileWriter writer = new FileWriter(CONFIG)) {
-
                 JsonArray basicMobGroupData = new JsonArray();
 
                 JsonObject basicMobGroup = new JsonObject();
@@ -44,14 +40,12 @@ public class InvasionMobConfig {
                 zombieUnit.addProperty("mobid", "minecraft:zombie");
                 zombieUnit.addProperty("minCount", 2);
                 zombieUnit.addProperty("maxCount", 4);
-                zombieUnit.addProperty("creditWeight", 1);
                 basicMobUnitData.add(zombieUnit);
 
                 JsonObject skeletonUnit = new JsonObject();
                 skeletonUnit.addProperty("mobid", "minecraft:skeleton");
                 skeletonUnit.addProperty("minCount", 5);
                 skeletonUnit.addProperty("maxCount", 9);
-                skeletonUnit.addProperty("creditWeight", 2);
                 basicMobUnitData.add(skeletonUnit);
 
                 basicMobGroup.add("units", basicMobUnitData);
@@ -85,8 +79,7 @@ public class InvasionMobConfig {
                     String mobid = unit.get("mobid").getAsString();
                     int minCount = unit.get("minCount").getAsInt();
                     int maxCount = unit.get("maxCount").getAsInt();
-                    int creditWeight=unit.get("creditWeight").getAsInt();
-                    units.add(new MobUnitData(mobid, minCount, maxCount,creditWeight));
+                    units.add(new MobUnitData(mobid, minCount, maxCount));
                 }
                 mobGroups.add(new MobGroupData(name, weight, cost, units));
             }
