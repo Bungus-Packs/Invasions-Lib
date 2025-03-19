@@ -6,5 +6,6 @@ public class InvasionsLibClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
     }
 }
