@@ -1,4 +1,4 @@
-package org.example.invasionslib.client;
+package bunguspacks.invasionslib.client;
 
 import net.fabricmc.api.ClientModInitializer;
 
