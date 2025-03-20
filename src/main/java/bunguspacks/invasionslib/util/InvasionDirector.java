@@ -5,8 +5,12 @@ import bunguspacks.invasionslib.StateSaverAndLoader;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.world.spawner.MobSpawner;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
@@ -103,8 +107,8 @@ public class InvasionDirector {
             }
         }
         //if all waves are finished and the passive director has finished spawning, end the invasion
-        if (allWavesFinished && totalPassiveCredits <= 0) {
-            InvasionsLib.LOGGER.info("Finished spawning mobs for Invasion.");
+        if (allWavesFinished && creditsKilled >= (waveCredits + passiveCredits)) {
+            InvasionsLib.LOGGER.info("Finished invasion.");
             InvasionsLib.invasionDirectorUpdater.removeDirector();
         }
     }
@@ -123,6 +127,7 @@ public class InvasionDirector {
         }
 
     }
+
 
     //attempt to spawn the top of deck with the passive director; TODO: implement real fail behaviour instead of just waiting for credits
     public void trySpawn() {

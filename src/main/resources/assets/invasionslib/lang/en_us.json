@@ -1,5 +1,8 @@
 {
   "block.invasionslib.invasion_beacon": "Invasion Beacon",
 
-  "itemgroup.invasions": "Invasions Lib"
+  "itemgroup.invasions": "Invasions Lib",
+
+  "progressbar.invasion": "Invasion",
+  "progressbar.victory": "Victory!"
 }
