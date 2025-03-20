@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvasionDirectorConfig {
+public class InvasionProfileConfig {
 
     //config filepath
     private static final File CONFIG = new File("config/invasionslib/profile_config.json");
@@ -27,6 +27,7 @@ public class InvasionDirectorConfig {
     }
 
     public static List<DirectorProfileData> profiles = new ArrayList<>();
+
 
     //called on init
     public static void loadConfig() {

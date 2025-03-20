@@ -31,6 +31,8 @@ public class MobGroupConfig {
 
     //called on init
     public static void loadConfig() {
+
+
         //make default config if none exists
         if (!CONFIG.exists()) {
             CONFIG.getParentFile().mkdirs();
@@ -38,30 +40,76 @@ public class MobGroupConfig {
 
                 JsonArray mobGroupData = new JsonArray();
 
+
                 JsonObject basicMobGroup = new JsonObject();
-                basicMobGroup.addProperty("name", "zombieGroup");
+                basicMobGroup.addProperty("name", "basicGroup");
                 basicMobGroup.addProperty("weight", 100);
                 basicMobGroup.addProperty("cost", 10);
-
                 JsonArray basicMobUnitData = new JsonArray();
 
-                JsonObject zombieUnit = new JsonObject();
-                zombieUnit.addProperty("mobid", "minecraft:zombie");
-                zombieUnit.addProperty("minCount", 2);
-                zombieUnit.addProperty("maxCount", 4);
-                zombieUnit.addProperty("creditWeight", 1);
-                basicMobUnitData.add(zombieUnit);
+                JsonObject basicZombieUnit = new JsonObject();
+                basicZombieUnit.addProperty("mobid", "minecraft:zombie");
+                basicZombieUnit.addProperty("minCount", 1);
+                basicZombieUnit.addProperty("maxCount", 2);
+                basicZombieUnit.addProperty("creditWeight", 1);
+                basicMobUnitData.add(basicZombieUnit);
 
-                JsonObject skeletonUnit = new JsonObject();
-                skeletonUnit.addProperty("mobid", "minecraft:skeleton");
-                skeletonUnit.addProperty("minCount", 5);
-                skeletonUnit.addProperty("maxCount", 9);
-                skeletonUnit.addProperty("creditWeight", 2);
-                basicMobUnitData.add(skeletonUnit);
+                JsonObject basicSkeletonUnit = new JsonObject();
+                basicSkeletonUnit.addProperty("mobid", "minecraft:skeleton");
+                basicSkeletonUnit.addProperty("minCount", 0);
+                basicSkeletonUnit.addProperty("maxCount", 1);
+                basicSkeletonUnit.addProperty("creditWeight", 2);
+                basicMobUnitData.add(basicSkeletonUnit);
 
                 basicMobGroup.add("units", basicMobUnitData);
-
                 mobGroupData.add(basicMobGroup);
+
+
+                JsonObject zombieMobGroup = new JsonObject();
+                zombieMobGroup.addProperty("name", "zombieGroup");
+                zombieMobGroup.addProperty("weight", 50);
+                zombieMobGroup.addProperty("cost", 25);
+                JsonArray zombieMobUnitData = new JsonArray();
+
+                JsonObject zombieGroupUnit = new JsonObject();
+                zombieGroupUnit.addProperty("mobid", "minecraft:zombie");
+                zombieGroupUnit.addProperty("minCount", 4);
+                zombieGroupUnit.addProperty("maxCount", 5);
+                zombieMobUnitData.add(zombieGroupUnit);
+
+                zombieMobGroup.add("units", zombieMobUnitData);
+                mobGroupData.add(zombieMobGroup);
+
+
+                JsonObject skeletonMobGroup = new JsonObject();
+                skeletonMobGroup.addProperty("name", "skeletonGroup");
+                skeletonMobGroup.addProperty("weight", 10);
+                skeletonMobGroup.addProperty("cost", 25);
+                JsonArray skeletonMobUnitData = new JsonArray();
+
+                JsonObject skeletonGroupUnit = new JsonObject();
+                skeletonGroupUnit.addProperty("mobid", "minecraft:skeleton");
+                skeletonGroupUnit.addProperty("minCount", 4);
+                skeletonGroupUnit.addProperty("maxCount", 5);
+                skeletonMobUnitData.add(skeletonGroupUnit);
+
+                skeletonMobGroup.add("units", skeletonMobUnitData);
+                mobGroupData.add(skeletonMobGroup);
+
+
+                JsonObject ravagerMobGroup = new JsonObject();
+                ravagerMobGroup.addProperty("name", "ravagerGroup");
+                ravagerMobGroup.addProperty("weight", 100);
+                ravagerMobGroup.addProperty("cost", 100);
+                JsonArray ravagerMobUnitData = new JsonArray();
+
+                JsonObject ravagerGroupUnit = new JsonObject();
+                ravagerGroupUnit.addProperty("mobid", "minecraft:ravager");
+                ravagerGroupUnit.addProperty("count", 1);
+                ravagerMobUnitData.add(ravagerGroupUnit);
+
+                ravagerMobGroup.add("units", ravagerMobUnitData);
+                mobGroupData.add(ravagerMobGroup);
 
                 JsonObject defaultConfig = new JsonObject();
                 defaultConfig.add("mobGroups", mobGroupData);
@@ -86,9 +134,9 @@ public class MobGroupConfig {
                 for (int j = 0; j < mobUnits.size(); j++) {
                     JsonObject unit = mobUnits.get(j).getAsJsonObject();
                     String mobid = unit.get("mobid").getAsString();
-                    int minCount = unit.get("minCount").getAsInt();
-                    int maxCount = unit.get("maxCount").getAsInt();
-                    int creditWeight = unit.get("creditWeight").getAsInt();
+                    int minCount = unit.get(unit.has("count") ? "count" : "minCount").getAsInt();
+                    int maxCount = unit.get(unit.has("count") ? "count" : "maxCount").getAsInt();
+                    int creditWeight = unit.has("creditWeight") ? unit.get("creditWeight").getAsInt() : 1;
                     units.add(new MobUnitData(mobid, minCount, maxCount, creditWeight));
                 }
                 mobGroups.put(name, new MobGroupData(name, weight, cost, units));

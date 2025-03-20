@@ -1,7 +1,10 @@
 package bunguspacks.invasionslib.command;
 
 import bunguspacks.invasionslib.InvasionsLib;
+import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.config.MobGroupConfig;
+import bunguspacks.invasionslib.util.InvasionDirectorBuilder;
 import bunguspacks.invasionslib.world.spawner.MobSpawner;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,7 +17,14 @@ public class SpawnCommand {
     //CLASS IS FOR TESTING, REMOVE LATER
 
     private static int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        MobSpawner.spawnMobGroup(MobGroupConfig.mobGroups.get(0), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
+        InvasionsLib.invasionDirectorUpdater.addDirector(InvasionDirectorBuilder
+                .create(context.getSource().getWorld(), context.getSource().getPlayer().getBlockPos())
+                .withCreditTotal(1000)
+                .withIntensityFraction(0.01f)
+                .withMobData(InvasionMobConfig.invasionMobs.get(0))
+                .withProfile(InvasionProfileConfig.profiles.get(1))
+                .build());
+        //MobSpawner.spawnMobGroup(MobGroupConfig.mobGroups.get("zombieGroup"), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
         return 1;
     }
 

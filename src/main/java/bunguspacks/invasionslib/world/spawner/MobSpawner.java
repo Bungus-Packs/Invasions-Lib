@@ -35,18 +35,18 @@ public class MobSpawner implements Spawner {
     }
 
     //spawn mob in donut around specified position and notify director to start tracking it
-    public static void spawnMob(String mobid, ServerWorld world, BlockPos pos, InvasionDirector director, float cost) {
+    public static void spawnMob(String mobid, ServerWorld world, BlockPos pos, InvasionDirector director, float cost, boolean waveMob) {
         EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobid));
         MobEntity mob = (MobEntity) mobType.create(world);
         if (mob != null) {
             BlockPos spawnPos = getBlockPosWithDistance(pos, world, 5, 10);
             mob.refreshPositionAndAngles(spawnPos, 0, 0);
             world.spawnEntity(mob);
-            director.startTracking(mob, cost);
+            director.startTracking(mob, cost, waveMob);
         }
     }
 
-    public static void spawnMobGroup(MobGroupConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director) {
+    public static void spawnMobGroup(MobGroupConfig.MobGroupData data, ServerWorld world, BlockPos pos, @Nullable InvasionDirector director, boolean waveMob) {
         List<MobGroupConfig.MobUnitData> unitData = data.mobs();
         int totalCredits = data.cost();
         Random random = world.random;
@@ -72,7 +72,7 @@ public class MobSpawner implements Spawner {
         else {
             for (int i = 0; i < unitData.size(); i++) {
                 for (int j = 0; j < unitCounts.get(i); j++)
-                    spawnMob(unitData.get(i).mobid(), world, pos, director, ((float) unitData.get(i).creditWeight() * totalCredits / unitCreditWeightSum));
+                    spawnMob(unitData.get(i).mobid(), world, pos, director, ((float) unitData.get(i).creditWeight() * totalCredits / unitCreditWeightSum), waveMob);
             }
         }
 

@@ -15,7 +15,8 @@ public class InvasionDirectorUpdater {
         //have directors check their mobs every tick
         for (InvasionDirector d : directors) {
             d.checkMobs();
-            d.updateRate();
+            d.trySpawn();
+            d.updateCredits();
         }
     }
 

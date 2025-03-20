@@ -1,7 +1,7 @@
 package bunguspacks.invasionslib;
 
 import bunguspacks.invasionslib.command.SpawnCommand;
-import bunguspacks.invasionslib.config.InvasionDirectorConfig;
+import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.event.ModWorldTickEvents;
@@ -25,7 +25,7 @@ public class InvasionsLib implements ModInitializer {
 
         LOGGER.info("Initializing mod configs for " + MOD_ID);
         MobGroupConfig.loadConfig();
-        InvasionDirectorConfig.loadConfig();
+        InvasionProfileConfig.loadConfig();
         InvasionMobConfig.loadConfig();
 
         LOGGER.info("Initializing mod events for " + MOD_ID);
