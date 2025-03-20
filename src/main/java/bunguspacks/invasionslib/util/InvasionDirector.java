@@ -1,5 +1,6 @@
 package bunguspacks.invasionslib.util;
 
+import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.StateSaverAndLoader;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
@@ -66,23 +67,34 @@ public class InvasionDirector {
             waveThresholds.add(passiveCreditsKilled / totalPassiveCredits >= wave.progressPoint());
         }
         passiveCreditsKilled += thisPassiveKill;
+        boolean allWavesFinished = true;
         //if the passive kills have passed a threshold
         for (int i = 0; i < waveThresholds.size(); i++) {
             InvasionProfileConfig.DirectorWaveData wave = profile.waves().get(i);
             if (waveThresholds.get(i) ^ passiveCreditsKilled / totalPassiveCredits >= wave.progressPoint()) {
                 spawnWave(waveCredits * wave.sizeFraction());
             }
+            if (!waveThresholds.get(i)) {
+                allWavesFinished = false;
+            }
+        }
+        if (allWavesFinished && totalPassiveCredits <= 0) {
+            InvasionsLib.invasionDirectorUpdater.removeDirector();
         }
     }
 
     public void updateCredits() {
-        if (livingCredits < intensity) {
-            creditRate *= 1.1f;
-        } else {
-            if (creditRate > 0.005)
-                creditRate /= 1.1f;
+        if (totalPassiveCredits > 0) {
+            if (livingCredits < intensity) {
+                creditRate *= 1.1f;
+            } else {
+                if (creditRate > 0.005)
+                    creditRate /= 1.1f;
+            }
+            currentPassiveCredits += creditRate;
+            totalPassiveCredits -= creditRate;
         }
-        currentPassiveCredits += creditRate;
+
     }
 
     public void trySpawn() {
