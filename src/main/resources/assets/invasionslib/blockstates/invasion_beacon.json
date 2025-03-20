@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "invasionslib:block/invasion_beacon"
+    }
+  }
+}

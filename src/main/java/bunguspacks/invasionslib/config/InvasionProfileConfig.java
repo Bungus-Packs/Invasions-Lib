@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class InvasionProfileConfig {
@@ -26,7 +27,7 @@ public class InvasionProfileConfig {
     public record DirectorWaveData(float progressPoint, float sizeFraction) {
     }
 
-    public static List<DirectorProfileData> profiles = new ArrayList<>();
+    public static HashMap<String,DirectorProfileData> profiles=new HashMap<>();
 
 
     //called on init
@@ -117,7 +118,7 @@ public class InvasionProfileConfig {
                     float sizeFraction = ((float) wave.get("size").getAsInt()) / waveSizeSum;
                     waveData.add(new DirectorWaveData(progressPoint, sizeFraction));
                 }
-                profiles.add(new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
+                profiles.put(name,new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
             }
 
         } catch (Exception e) {

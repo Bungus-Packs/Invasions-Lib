@@ -11,7 +11,7 @@ import java.util.List;
 public class ModWorldTickEvents {
     public ModWorldTickEvents(InvasionDirectorUpdater d) {
         //register world tick event for director updater
-        ServerTickEvents.END_WORLD_TICK.register((world) -> d.updateDirectors());
+        ServerTickEvents.END_WORLD_TICK.register((world) -> d.updateDirectors(world));
     }
 
 }

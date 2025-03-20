@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 //this config is for which mob groups invasions spawn
@@ -25,7 +26,8 @@ public class InvasionMobConfig {
     public record InvasionMobGroupData(MobGroupConfig.MobGroupData data, float chance, int cost) {
     }
 
-    public static final List<InvasionMobData> invasionMobs = new ArrayList<>();
+    public static final HashMap<String,InvasionMobData> invasionMobs=new HashMap<>();
+
 
     //called on init
     public static void loadConfig() {
@@ -116,7 +118,7 @@ public class InvasionMobConfig {
                         wave.add(new InvasionMobGroupData(data, waveChance, cost));
                     }
                 }
-                invasionMobs.add(new InvasionMobData(name, chance, passive, wave));
+                invasionMobs.put(name,new InvasionMobData(name, chance, passive, wave));
             }
 
         } catch (Exception e) {

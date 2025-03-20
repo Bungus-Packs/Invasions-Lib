@@ -1,11 +1,13 @@
 package bunguspacks.invasionslib.util;
 
 import bunguspacks.invasionslib.InvasionsLib;
+import bunguspacks.invasionslib.StateSaverAndLoader;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.world.spawner.MobSpawner;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -16,7 +18,7 @@ import java.util.List;
 
 
 public class InvasionDirector {
-    private final InvasionMobObserver observer = new InvasionMobObserver();
+    private InvasionMobObserver observer = new InvasionMobObserver();
     private float creditsKilled;
     private float passiveCreditsKilled;
     private float livingCredits;
@@ -121,5 +123,71 @@ public class InvasionDirector {
         return out;
     }
 
+    public InvasionProfileConfig.DirectorProfileData getProfile() {
+        return profile;
+    }
 
+    public BlockPos getOrigin() {
+        return origin;
+    }
+
+    public float getCreditRate() {
+        return creditRate;
+    }
+
+    public float getCreditsKilled() {
+        return creditsKilled;
+    }
+
+    public float getCurrentPassiveCredits() {
+        return currentPassiveCredits;
+    }
+
+    public float getIntensity() {
+        return intensity;
+    }
+
+    public float getLivingCredits() {
+        return livingCredits;
+    }
+
+    public float getPassiveCreditsKilled() {
+        return passiveCreditsKilled;
+    }
+
+    public float getTotalPassiveCredits() {
+        return totalPassiveCredits;
+    }
+
+    public float getWaveCredits() {
+        return waveCredits;
+    }
+
+    public InvasionMobConfig.InvasionMobData getMobData() {
+        return mobData;
+    }
+
+    public InvasionMobObserver getObserver() {
+        return observer;
+    }
+
+    public InvasionDirector(StateSaverAndLoader save){
+        waveCredits=save.waveCredits;
+        totalPassiveCredits=save.totalPassiveCredits;
+        currentPassiveCredits=save.currentPassiveCredits;
+        creditRate=save.creditRate;
+        intensity=save.intensity;
+        livingCredits=save.livingCredits;
+        passiveCreditsKilled=save.passiveCreditsKilled;
+        creditsKilled=save.totalCreditsKilled;
+        origin=new BlockPos(save.originPos[0],save.originPos[1],save.originPos[2]);
+        profile=InvasionProfileConfig.profiles.getOrDefault(save.invasionProfile,null);
+        mobData=InvasionMobConfig.invasionMobs.getOrDefault(save.invasionMobData,null);
+        world=save.world;
+        observer=new InvasionMobObserver(save);
+
+        passiveTopdeck=getRandomGroup(false);
+        waveTopdeck=getRandomGroup(true);
+
+    }
 }

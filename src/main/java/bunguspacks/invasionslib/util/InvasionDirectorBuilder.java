@@ -6,6 +6,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
+import java.util.Map;
+import java.util.Set;
+
 public class InvasionDirectorBuilder {
     private float creditTotal;
     private float intensity;
@@ -58,11 +61,14 @@ public class InvasionDirectorBuilder {
             float profileRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionProfileConfig.DirectorProfileData out = null;
+            Set<Map.Entry<String, InvasionProfileConfig.DirectorProfileData>> set=InvasionProfileConfig.profiles.entrySet();
             int i = 0;
-            while (chanceCumSum < profileRandom) {
-                out = InvasionProfileConfig.profiles.get(i);
-                chanceCumSum += out.chance();
-                i++;
+            for(Map.Entry<String,InvasionProfileConfig.DirectorProfileData> entry:set){
+                out=entry.getValue();
+                chanceCumSum+= out.chance();
+                if(chanceCumSum>profileRandom){
+                    break;
+                }
             }
             profile = out;
         }
@@ -70,11 +76,14 @@ public class InvasionDirectorBuilder {
             float mobDataRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionMobConfig.InvasionMobData out = null;
+            Set<Map.Entry<String, InvasionMobConfig.InvasionMobData>> set=InvasionMobConfig.invasionMobs.entrySet();
             int i = 0;
-            while (chanceCumSum < mobDataRandom) {
-                out = InvasionMobConfig.invasionMobs.get(i);
-                chanceCumSum += out.chance();
-                i++;
+            for(Map.Entry<String,InvasionMobConfig.InvasionMobData> entry:set){
+                out=entry.getValue();
+                chanceCumSum+= out.chance();
+                if(chanceCumSum>mobDataRandom){
+                    break;
+                }
             }
             mobData = out;
         }
