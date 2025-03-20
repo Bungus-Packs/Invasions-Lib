@@ -9,6 +9,7 @@ import net.minecraft.util.math.random.Random;
 import java.util.Map;
 import java.util.Set;
 
+//helper class to build invasion directors in a more modular way
 public class InvasionDirectorBuilder {
     private float creditTotal;
     private float intensity;
@@ -57,6 +58,7 @@ public class InvasionDirectorBuilder {
 
     public InvasionDirector build() {
         final Random random = world.random;
+        //if no profile is supplied, choose a weighted random one
         if (profile == null) {
             float profileRandom = random.nextFloat();
             float chanceCumSum = 0f;
@@ -72,6 +74,7 @@ public class InvasionDirectorBuilder {
             }
             profile = out;
         }
+        //if no mob data is supplied, choose a weighted random one
         if (mobData == null) {
             float mobDataRandom = random.nextFloat();
             float chanceCumSum = 0f;

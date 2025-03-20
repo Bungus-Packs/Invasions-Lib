@@ -26,8 +26,36 @@ public class InvasionMobConfig {
     public record InvasionMobGroupData(MobGroupConfig.MobGroupData data, float chance, int cost) {
     }
 
+    //store sets of invasion mob data in a hashmap keyed by name
     public static final HashMap<String, InvasionMobData> invasionMobs = new HashMap<>();
 
+    /*
+    CONFIG JSON FORMAT:
+    {
+        //List of invasion data
+        "invasions": [
+            {
+                "name": "basicInvasion", //name of the invasion to be internally referenced
+                "weight": 1, //weight of the invasion to be randomly selected from among available invasions
+                "mobGroups": [ //List of the different mob groups spawned by a specific invasion
+                    {
+                        "name": "basicGroup", //name of the mob group to be spawned; Must be a name defined in the mob_group_config.json
+                        "weight": 100, //OPTIONAL; override mob group defined weight for spawning
+                        "cost": 10, //OPTIONAL; override mob group defined cost
+                        "doPassiveSpawning": true, //OPTIONAL; whether the mob should be spawned by the passive director; defaults to true
+                        "doWaveSpawning": true //OPTIONAL; whether the mob should be spawned by the wave director; defaults to true
+                    },
+                    {
+                        (a different mob group)
+                    },...
+                ]
+            },
+            {
+                (a different invasion)
+            },...
+        ]
+    }
+    */
 
     //called on init
     public static void loadConfig() {
@@ -38,18 +66,12 @@ public class InvasionMobConfig {
                 JsonArray invasionData = new JsonArray();
 
                 JsonObject basicInvasion = new JsonObject();
-                basicInvasion.addProperty("name", "basicinvasion");
+                basicInvasion.addProperty("name", "basicInvasion");
                 basicInvasion.addProperty("weight", 1);
                 JsonArray basicInvasionMobGroups = new JsonArray();
 
                 JsonObject basicInvasionBasicGroup = new JsonObject();
                 basicInvasionBasicGroup.addProperty("name", "basicGroup");
-                //optional weight and cost override
-                //basicInvasionZombieGroup.addProperty("weight",100);
-                //basicInvasionZombieGroup.addProperty("cost",10);
-                //optional conditional spawning, defaults to true on both
-                //basicInvasionZombieGroup.addProperty("doPassiveSpawning",false);
-                //basicInvasionZombieGroup.addProperty("doWaveSpawning",false);
                 basicInvasionMobGroups.add(basicInvasionBasicGroup);
 
                 JsonObject basicInvasionZombieGroup = new JsonObject();
@@ -80,6 +102,7 @@ public class InvasionMobConfig {
         try (FileReader reader = new FileReader(CONFIG)) {
             JsonObject config = new Gson().fromJson(reader, JsonObject.class);
             JsonArray invasions = config.getAsJsonArray("invasions");
+            //get the sum of weights for invasions so it can be internally converted to probability
             int totalWeights = 0;
             for (int i = 0; i < invasions.size(); i++) {
                 JsonObject invasion = invasions.get(i).getAsJsonObject();
@@ -94,7 +117,7 @@ public class InvasionMobConfig {
                 int passiveWeightTotal = 0;
                 int waveWeightTotal = 0;
                 JsonArray invasionGroups = invasion.getAsJsonArray("mobGroups");
-                //grab weight totals for both passive and wave spawns
+                //grab weight totals for both passive and wave spawns so they can be internally converted to chance
                 for (int j = 0; j < invasionGroups.size(); j++) {
                     JsonObject mobGroup = invasionGroups.get(j).getAsJsonObject();
                     MobGroupConfig.MobGroupData data = MobGroupConfig.mobGroups.get(mobGroup.get("name").getAsString());
@@ -105,6 +128,7 @@ public class InvasionMobConfig {
                         waveWeightTotal += data.weight();
                     }
                 }
+                //read both passive and wave spawn groups into records
                 for (int j = 0; j < invasionGroups.size(); j++) {
                     JsonObject mobGroup = invasionGroups.get(j).getAsJsonObject();
                     MobGroupConfig.MobGroupData data = MobGroupConfig.mobGroups.get(mobGroup.get("name").getAsString());

@@ -18,7 +18,7 @@ public class SpawnCommand {
         InvasionsLib.invasionDirectorUpdater.addDirector(InvasionDirectorBuilder
                 .create(context.getSource().getWorld(), context.getSource().getPlayer().getBlockPos())
                 .withCreditTotal(1000)
-                .withIntensityFraction(0.01f)
+                .withIntensityFraction(0.02f)
                 .withMobData(InvasionMobConfig.invasionMobs.get("basicInvasion"))
                 .withProfile(InvasionProfileConfig.profiles.get("classic"))
                 .build());
