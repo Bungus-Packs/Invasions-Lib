@@ -1,14 +1,11 @@
 package bunguspacks.invasionslib.util;
 
-import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.StateSaverAndLoader;
 import net.fabricmc.loader.impl.lib.tinyremapper.extension.mixin.common.data.Pair;
 import net.minecraft.entity.mob.MobEntity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class InvasionMobObserver {
     private List<Pair<MobEntity, Float>> activePassiveMobs = new ArrayList<>();
@@ -17,12 +14,12 @@ public class InvasionMobObserver {
     public InvasionMobObserver() {
     }
 
-    public InvasionMobObserver(StateSaverAndLoader save){
-        for(int i=0;i<save.trackedMobs.size();i++){
-            if(save.trackedMobsIsWaveSpawn.get(i)){
-                activeWaveMobs.add(Pair.of((MobEntity)save.world.getEntity(save.trackedMobs.get(i)),save.trackedMobCosts.get(i)));
-            }else{
-                activePassiveMobs.add(Pair.of((MobEntity)save.world.getEntity(save.trackedMobs.get(i)),save.trackedMobCosts.get(i)));
+    public InvasionMobObserver(StateSaverAndLoader save) {
+        for (int i = 0; i < save.trackedMobs.size(); i++) {
+            if (save.trackedMobsIsWaveSpawn.get(i)) {
+                activeWaveMobs.add(Pair.of((MobEntity) save.world.getEntity(save.trackedMobs.get(i)), save.trackedMobCosts.get(i)));
+            } else {
+                activePassiveMobs.add(Pair.of((MobEntity) save.world.getEntity(save.trackedMobs.get(i)), save.trackedMobCosts.get(i)));
             }
         }
     }

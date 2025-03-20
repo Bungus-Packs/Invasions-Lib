@@ -11,14 +11,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ModItemGroups {
-    public static final ItemGroup INVASION_GROUP= Registry.register(Registries.ITEM_GROUP,
-            new Identifier(InvasionsLib.MOD_ID,"invasion_group"),
+    public static final ItemGroup INVASION_GROUP = Registry.register(Registries.ITEM_GROUP,
+            new Identifier(InvasionsLib.MOD_ID, "invasion_group"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.invasions"))
-                    .icon(()->new ItemStack(ModBlocks.INVASION_BEACON)).entries((displayContext, entries) -> {
+                    .icon(() -> new ItemStack(ModBlocks.INVASION_BEACON)).entries((displayContext, entries) -> {
                         entries.add(ModBlocks.INVASION_BEACON);
                     }).build());
 
-    public static void registerItemGroups(){
+    public static void registerItemGroups() {
 
     }
 }

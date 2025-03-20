@@ -26,7 +26,7 @@ public class InvasionMobConfig {
     public record InvasionMobGroupData(MobGroupConfig.MobGroupData data, float chance, int cost) {
     }
 
-    public static final HashMap<String,InvasionMobData> invasionMobs=new HashMap<>();
+    public static final HashMap<String, InvasionMobData> invasionMobs = new HashMap<>();
 
 
     //called on init
@@ -118,7 +118,7 @@ public class InvasionMobConfig {
                         wave.add(new InvasionMobGroupData(data, waveChance, cost));
                     }
                 }
-                invasionMobs.put(name,new InvasionMobData(name, chance, passive, wave));
+                invasionMobs.put(name, new InvasionMobData(name, chance, passive, wave));
             }
 
         } catch (Exception e) {

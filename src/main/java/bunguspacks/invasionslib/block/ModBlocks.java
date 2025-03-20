@@ -12,17 +12,18 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
-    public static final Block INVASION_BEACON=registerBlock("invasion_beacon",new InvasionBeaconBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
+    public static final Block INVASION_BEACON = registerBlock("invasion_beacon", new InvasionBeaconBlock(FabricBlockSettings.copyOf(Blocks.BEDROCK).nonOpaque()));
 
-    private static Block registerBlock(String name, Block block){
-        registerBlockItem(name,block);
-        return Registry.register(Registries.BLOCK,new Identifier(InvasionsLib.MOD_ID,name),block);
-    }
-    private static Item registerBlockItem(String name, Block block){
-        return Registry.register(Registries.ITEM,new Identifier(InvasionsLib.MOD_ID,name),new BlockItem(block, new FabricItemSettings()));
+    private static Block registerBlock(String name, Block block) {
+        registerBlockItem(name, block);
+        return Registry.register(Registries.BLOCK, new Identifier(InvasionsLib.MOD_ID, name), block);
     }
 
-    public static void registerModBlocks(){
+    private static Item registerBlockItem(String name, Block block) {
+        return Registry.register(Registries.ITEM, new Identifier(InvasionsLib.MOD_ID, name), new BlockItem(block, new FabricItemSettings()));
+    }
+
+    public static void registerModBlocks() {
 
     }
 }

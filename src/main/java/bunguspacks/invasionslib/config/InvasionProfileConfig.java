@@ -27,7 +27,7 @@ public class InvasionProfileConfig {
     public record DirectorWaveData(float progressPoint, float sizeFraction) {
     }
 
-    public static HashMap<String,DirectorProfileData> profiles=new HashMap<>();
+    public static HashMap<String, DirectorProfileData> profiles = new HashMap<>();
 
 
     //called on init
@@ -118,7 +118,7 @@ public class InvasionProfileConfig {
                     float sizeFraction = ((float) wave.get("size").getAsInt()) / waveSizeSum;
                     waveData.add(new DirectorWaveData(progressPoint, sizeFraction));
                 }
-                profiles.put(name,new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
+                profiles.put(name, new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
             }
 
         } catch (Exception e) {

@@ -3,8 +3,8 @@ package bunguspacks.invasionslib;
 import bunguspacks.invasionslib.block.ModBlocks;
 import bunguspacks.invasionslib.block.entity.ModBlockEntities;
 import bunguspacks.invasionslib.command.SpawnCommand;
-import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
+import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.event.ModWorldTickEvents;
 import bunguspacks.invasionslib.item.ModItemGroups;
@@ -36,16 +36,16 @@ public class InvasionsLib implements ModInitializer {
         new ModWorldTickEvents(invasionDirectorUpdater);
 
 
-        LOGGER.info("Registering mod items for "+MOD_ID);
+        LOGGER.info("Registering mod items for " + MOD_ID);
         ModItems.registerModItems();
 
-        LOGGER.info("Registering mod blocks for "+MOD_ID);
+        LOGGER.info("Registering mod blocks for " + MOD_ID);
         ModBlocks.registerModBlocks();
 
-        LOGGER.info("Registering mod item groups for "+MOD_ID);
+        LOGGER.info("Registering mod item groups for " + MOD_ID);
         ModItemGroups.registerItemGroups();
 
-        LOGGER.info("Registering mod block entities for "+MOD_ID);
+        LOGGER.info("Registering mod block entities for " + MOD_ID);
         ModBlockEntities.registerBlockEntities();
     }
 }

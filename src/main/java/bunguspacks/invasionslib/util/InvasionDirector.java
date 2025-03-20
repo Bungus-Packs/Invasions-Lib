@@ -1,17 +1,13 @@
 package bunguspacks.invasionslib.util;
 
-import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.StateSaverAndLoader;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
-import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.world.spawner.MobSpawner;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,23 +167,23 @@ public class InvasionDirector {
         return observer;
     }
 
-    public InvasionDirector(StateSaverAndLoader save){
-        waveCredits=save.waveCredits;
-        totalPassiveCredits=save.totalPassiveCredits;
-        currentPassiveCredits=save.currentPassiveCredits;
-        creditRate=save.creditRate;
-        intensity=save.intensity;
-        livingCredits=save.livingCredits;
-        passiveCreditsKilled=save.passiveCreditsKilled;
-        creditsKilled=save.totalCreditsKilled;
-        origin=new BlockPos(save.originPos[0],save.originPos[1],save.originPos[2]);
-        profile=InvasionProfileConfig.profiles.getOrDefault(save.invasionProfile,null);
-        mobData=InvasionMobConfig.invasionMobs.getOrDefault(save.invasionMobData,null);
-        world=save.world;
-        observer=new InvasionMobObserver(save);
+    public InvasionDirector(StateSaverAndLoader save) {
+        waveCredits = save.waveCredits;
+        totalPassiveCredits = save.totalPassiveCredits;
+        currentPassiveCredits = save.currentPassiveCredits;
+        creditRate = save.creditRate;
+        intensity = save.intensity;
+        livingCredits = save.livingCredits;
+        passiveCreditsKilled = save.passiveCreditsKilled;
+        creditsKilled = save.totalCreditsKilled;
+        origin = new BlockPos(save.originPos[0], save.originPos[1], save.originPos[2]);
+        profile = InvasionProfileConfig.profiles.getOrDefault(save.invasionProfile, null);
+        mobData = InvasionMobConfig.invasionMobs.getOrDefault(save.invasionMobData, null);
+        world = save.world;
+        observer = new InvasionMobObserver(save);
 
-        passiveTopdeck=getRandomGroup(false);
-        waveTopdeck=getRandomGroup(true);
+        passiveTopdeck = getRandomGroup(false);
+        waveTopdeck = getRandomGroup(true);
 
     }
 }

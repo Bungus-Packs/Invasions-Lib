@@ -61,12 +61,12 @@ public class InvasionDirectorBuilder {
             float profileRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionProfileConfig.DirectorProfileData out = null;
-            Set<Map.Entry<String, InvasionProfileConfig.DirectorProfileData>> set=InvasionProfileConfig.profiles.entrySet();
+            Set<Map.Entry<String, InvasionProfileConfig.DirectorProfileData>> set = InvasionProfileConfig.profiles.entrySet();
             int i = 0;
-            for(Map.Entry<String,InvasionProfileConfig.DirectorProfileData> entry:set){
-                out=entry.getValue();
-                chanceCumSum+= out.chance();
-                if(chanceCumSum>profileRandom){
+            for (Map.Entry<String, InvasionProfileConfig.DirectorProfileData> entry : set) {
+                out = entry.getValue();
+                chanceCumSum += out.chance();
+                if (chanceCumSum > profileRandom) {
                     break;
                 }
             }
@@ -76,12 +76,12 @@ public class InvasionDirectorBuilder {
             float mobDataRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionMobConfig.InvasionMobData out = null;
-            Set<Map.Entry<String, InvasionMobConfig.InvasionMobData>> set=InvasionMobConfig.invasionMobs.entrySet();
+            Set<Map.Entry<String, InvasionMobConfig.InvasionMobData>> set = InvasionMobConfig.invasionMobs.entrySet();
             int i = 0;
-            for(Map.Entry<String,InvasionMobConfig.InvasionMobData> entry:set){
-                out=entry.getValue();
-                chanceCumSum+= out.chance();
-                if(chanceCumSum>mobDataRandom){
+            for (Map.Entry<String, InvasionMobConfig.InvasionMobData> entry : set) {
+                out = entry.getValue();
+                chanceCumSum += out.chance();
+                if (chanceCumSum > mobDataRandom) {
                     break;
                 }
             }

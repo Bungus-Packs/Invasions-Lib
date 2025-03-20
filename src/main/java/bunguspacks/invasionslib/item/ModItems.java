@@ -8,11 +8,11 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
 
-    private static Item registerItem(String name, Item item){
-        return Registry.register(Registries.ITEM,new Identifier(InvasionsLib.MOD_ID,name),item);
+    private static Item registerItem(String name, Item item) {
+        return Registry.register(Registries.ITEM, new Identifier(InvasionsLib.MOD_ID, name), item);
     }
 
-    public static void registerModItems(){
+    public static void registerModItems() {
 
     }
 }
