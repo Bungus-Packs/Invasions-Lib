@@ -2,6 +2,7 @@ package bunguspacks.invasionslib.world.spawner;
 
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.util.InvasionDirector;
+import net.minecraft.block.AirBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.Registries;
@@ -84,19 +85,54 @@ public class MobSpawner implements Spawner {
         double d = 0;
         double x = 0;
         double z = 0;
-        d = random.nextBetween(distanceMin, distanceMax);
-        x = random.nextBetween(0, (int) d);
-        if (x == 0) {
-            z = d;
-        } else {
-            z = Math.sqrt((d * d) - (x * x));
-            if (random.nextBoolean()) {
-                x = x * -1;
+        BlockPos spawnPos = pos;
+        // tries to find a location with 2 blocks of air using the world heightmap excluding leaves
+        for (int i = 0; i < 15; i ++) {
+            d = random.nextBetween(distanceMin, distanceMax);
+            x = random.nextBetween(0, (int) d);
+            if (x == 0) {
+                z = d;
+            } else {
+                z = Math.sqrt((d * d) - (x * x));
+                if (random.nextBoolean()) {
+                    x = x * -1;
+                }
             }
+            if (random.nextBoolean()) {
+                z = z * -1;
+            }
+            spawnPos = new BlockPos(pos.getX() + (int) x,
+                    world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
+                            pos.getX() + (int) x,
+                            pos.getZ() + (int) z),
+                    pos.getZ() + (int) z);
+            if (world.getBlockState(spawnPos).isAir() && world.getBlockState(spawnPos.up()).isAir())
+                return spawnPos;
         }
-        if (random.nextBoolean()) {
-            z = z * -1;
+        // if no valid locations can be found, it will begin searching on just the normal heightmap
+        for (int i = 0; i < 15; i ++) {
+            d = random.nextBetween(distanceMin, distanceMax);
+            x = random.nextBetween(0, (int) d);
+            if (x == 0) {
+                z = d;
+            } else {
+                z = Math.sqrt((d * d) - (x * x));
+                if (random.nextBoolean()) {
+                    x = x * -1;
+                }
+            }
+            if (random.nextBoolean()) {
+                z = z * -1;
+            }
+            spawnPos = new BlockPos(pos.getX() + (int) x,
+                    world.getTopY(Heightmap.Type.WORLD_SURFACE,
+                            pos.getX() + (int) x,
+                            pos.getZ() + (int) z),
+                    pos.getZ() + (int) z);
+            if (world.getBlockState(spawnPos).isAir() && world.getBlockState(spawnPos.up()).isAir())
+                return spawnPos;
         }
-        return new BlockPos(pos.getX() + (int) x, world.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX() + (int) x, pos.getZ() + (int) z), pos.getZ() + (int) z);
+        // if all that fails, it just returns the input position
+        return spawnPos;
     }
 }
