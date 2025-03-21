@@ -5,6 +5,8 @@ import bunguspacks.invasionslib.util.InvasionMobObserver;
 import net.fabricmc.loader.impl.lib.tinyremapper.extension.mixin.common.data.Pair;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
@@ -25,6 +27,7 @@ public class StateSaverAndLoader extends PersistentState {
     public float livingCredits;
     public float passiveCreditsKilled;
     public float totalCreditsKilled;
+    public float direction;
     public String invasionProfile;
     public String invasionMobData;
     public int[] originPos;
@@ -34,7 +37,6 @@ public class StateSaverAndLoader extends PersistentState {
     public ServerWorld world;
     public List<Boolean> wavesFinished;
     public float passiveCredits;
-    public float direction;
 
 
     //generate this object from a director object
