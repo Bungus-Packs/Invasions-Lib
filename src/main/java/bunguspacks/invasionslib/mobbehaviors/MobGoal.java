@@ -4,37 +4,47 @@ import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.WorldView;
 
-public class MobGoal<T extends PathAwareEntity> extends Goal {
+public class MobGoal extends MoveToTargetPosGoal {
 
     PathAwareEntity entity;
-    int dementiaTolerance = 20;
+    int dementiaTolerance = 50;
     int dementiaTimer = 0;
     int targetRange = 0;
+    PositionImpl basePosition = new PositionImpl(0,77,0);
     GoalSelector goalSelector;
-    ActiveTargetGoal<PlayerEntity> fightPlayer;
+    public AttackGoal fightPlayer;
     //Ideally range is infinite, but I am going to set a "reasonable number" in its place
-    GoToWalkTargetGoal attackBase = new GoToWalkTargetGoal((PathAwareEntity)this.entity, this.entity.speed);
-    BlockPos beaconLocation;
+    public MoveToTargetPosGoal attackBase = new MoveToTargetPosGoal(entity, entity.speed, 10000) {
+        @Override
+        protected boolean isTargetPos(WorldView world, BlockPos pos) {
+            if (world == null){
+                return false;
+            }
+            else return entity.getPos().isInRange(basePosition, 3);
+        }
+    };
 
     public MobGoal(PathAwareEntity entity){
+        super(entity, entity.getMovementSpeed(), -1);
         this.entity = entity;
     }
 
     public MobGoal(PathAwareEntity entity, int targetRange){
+        super(entity, entity.getMovementSpeed(), targetRange);
         this.entity = entity;
         this.targetRange = targetRange;
     }
 
     @Override
     public boolean canStart() {
-        return false;
+        return true;
     }
 
     @Override
@@ -42,7 +52,7 @@ public class MobGoal<T extends PathAwareEntity> extends Goal {
         super.start();
         this.goalSelector = ((MobEntityAccessor)entity).getGoalSelector();
         //Mob should always have attacking base as priority 1
-        goalSelector.add(1, attackBase);
+        goalSelector.add(0, attackBase);
     }
 
     @Override
@@ -61,23 +71,33 @@ public class MobGoal<T extends PathAwareEntity> extends Goal {
             dementiaTimer = dementiaTolerance;
             entity.setTarget(closestPlayer);
             if (!(goalSelector.getGoals().contains(fightPlayer))) {
-                fightPlayer = new ActiveTargetGoal<PlayerEntity>(this.entity, PlayerEntity.class, true, true);
+                fightPlayer = new AttackGoal(this.entity);
                 goalSelector.add(1, fightPlayer);
             }
         }
         //If not forgor, target should still be set to the previous player
         else {
-            dementiaTimer = Math.max(dementiaTimer-1, 0);
+            dementiaTimer--;
             //If forgor
             if (!(dementiaTimer == 0)) {
                 //target beacon thing
                 if (goalSelector.getGoals().contains(fightPlayer)) {
                     goalSelector.remove(fightPlayer);
                 }
-                goalSelector.remove(fightPlayer);
                 entity.setPositionTarget(new BlockPos(0,77,0), 1000);
+                if (!(goalSelector.getGoals().contains(attackBase))) {
+                    goalSelector.add(0, attackBase);
+                }
             }
         }
+    }
+
+    @Override
+    protected boolean isTargetPos(WorldView world, BlockPos pos) {
+        if (goalSelector.getGoals().contains(attackBase)){
+            return entity.getPos().isInRange(basePosition, 2);
+        }
+        return false;
     }
 
     @Override
