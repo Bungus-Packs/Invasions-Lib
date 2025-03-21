@@ -6,18 +6,12 @@ import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
 import bunguspacks.invasionslib.world.spawner.InvasionMobSpawner;
 import bunguspacks.invasionslib.world.spawner.SpawnLocationFinder;
-import bunguspacks.invasionslib.world.spawner.MobSpawner;
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -42,6 +36,8 @@ public class InvasionDirector {
     private float waveCredits;
     //passive credits the director currently has access to in its 'checking account'
     private float currentPassiveCredits;
+    //invasion direction of approach
+    private float direction;
     //invasion profile format described in InvasionProfileConfig
     private final InvasionProfileConfig.DirectorProfileData profile;
     //invasion mob data format described in InvasionMobConfig
@@ -79,7 +75,7 @@ public class InvasionDirector {
         passiveTopdeck = getRandomGroup(false);
         waveTopdeck = getRandomGroup(true);
         wavesFinished = new ArrayList<>();
-        System.out.println("c");
+        this.direction = direction;
         allLocations = new ArrayList<>();
         allLocations.addAll(SpawnLocationFinder.findAllLocations(this.mobData, this.world, origin, direction));
         System.out.println("d");
@@ -232,6 +228,10 @@ public class InvasionDirector {
         return passiveCredits;
     }
 
+    public float getDirection() {
+        return direction;
+    }
+
     //rebuild the director from a savestate
     public InvasionDirector(StateSaverAndLoader save) {
         waveCredits = save.waveCredits;
@@ -242,14 +242,18 @@ public class InvasionDirector {
         livingCredits = save.livingCredits;
         passiveCreditsKilled = save.passiveCreditsKilled;
         creditsKilled = save.totalCreditsKilled;
+        direction = save.direction;
         origin = new BlockPos(save.originPos[0], save.originPos[1], save.originPos[2]);
         profile = InvasionProfileConfig.profiles.getOrDefault(save.invasionProfile, null);
         mobData = InvasionMobConfig.invasionMobs.getOrDefault(save.invasionMobData, null);
         world = save.world;
+        random = world.random;
         observer = new InvasionMobObserver(save);
         passiveCredits = save.passiveCredits;
         passiveTopdeck = getRandomGroup(false);
         waveTopdeck = getRandomGroup(true);
         wavesFinished = save.wavesFinished;
+        allLocations = new ArrayList<>();
+        allLocations.addAll(SpawnLocationFinder.findAllLocations(this.mobData, this.world, origin, direction));
     }
 }
