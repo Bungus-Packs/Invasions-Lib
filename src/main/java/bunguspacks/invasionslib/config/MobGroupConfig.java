@@ -26,8 +26,36 @@ public class MobGroupConfig {
     public record MobUnitData(String mobId, int minCount, int maxCount, int creditWeight) {
     }
 
+    //store mob group data in hashmap keyed by name
     public static final HashMap<String, MobGroupData> mobGroups = new HashMap<>();
-    //public static final List<MobGroupData> mobGroups = new ArrayList<>();
+
+    /*
+    CONFIG JSON FORMAT:
+    {
+        //List of mob groups
+        "mobGroups": [
+            {
+                "name": "basicGroup", //Name of the mob group. Must be referenced in invasion_mob_config.json to assign to an invasion
+                "weight": 100, //Default spawn weighting of the group; can be overridden
+                "cost": 10, //Default cost of the group; can be overridden
+                "units": [ //List of the individual types and counts of mobs in the group
+                    {
+                        "mobid": "minecraft:zombie", //Mob ID of the mob being described
+                        "count": 2, //OPTIONAL; one of either 'count' or both 'minCount' and 'maxCount' must be present. Overrides the latter if both are present.
+                        "minCount": 1, //OPTIONAL; see above; the minimum count of a mob type to spawn in the group
+                        "maxCount": 3 //OPTIONAL; see above; the maximum count of a mob type to spawn in the group
+                    },
+                    {
+                        (another unit)
+                    },...
+                ]
+            },
+            {
+                (a different mob group)
+            },...
+        ]
+    }
+    */
 
     //called on init
     public static void loadConfig() {
