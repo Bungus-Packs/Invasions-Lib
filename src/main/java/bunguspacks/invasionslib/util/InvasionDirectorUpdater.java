@@ -23,6 +23,9 @@ public class InvasionDirectorUpdater {
         //create a new director and save it to persistent data
         InvasionsLib.LOGGER.info("Invasion started with profile \"" + dir.getProfile().name() + "\" and mob data \"" + dir.getMobData().name() + "\".");
         this.dir = dir;
+        if (progressBar != null) {
+            progressBar.clearPlayers();
+        }
         progressBar = new ServerBossBar(Text.translatable("progressbar.invasion"), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
         StateSaverAndLoader.getServerState(world.getServer()).loadFromDirector(dir);
     }

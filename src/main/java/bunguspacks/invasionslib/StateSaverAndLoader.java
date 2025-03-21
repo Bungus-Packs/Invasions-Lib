@@ -5,6 +5,8 @@ import bunguspacks.invasionslib.util.InvasionMobObserver;
 import net.fabricmc.loader.impl.lib.tinyremapper.extension.mixin.common.data.Pair;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
@@ -25,6 +27,7 @@ public class StateSaverAndLoader extends PersistentState {
     public float livingCredits;
     public float passiveCreditsKilled;
     public float totalCreditsKilled;
+    public float direction;
     public String invasionProfile;
     public String invasionMobData;
     public int[] originPos;
@@ -46,6 +49,7 @@ public class StateSaverAndLoader extends PersistentState {
         livingCredits = dir.getLivingCredits();
         passiveCreditsKilled = dir.getPassiveCreditsKilled();
         totalCreditsKilled = dir.getCreditsKilled();
+        direction = dir.getDirection();
         invasionProfile = dir.getProfile().name();
         invasionMobData = dir.getMobData().name();
         originPos = new int[]{dir.getOrigin().getX(), dir.getOrigin().getY(), dir.getOrigin().getZ()};
@@ -88,6 +92,7 @@ public class StateSaverAndLoader extends PersistentState {
         state.livingCredits = nbt.getFloat("livingCredits");
         state.passiveCreditsKilled = nbt.getFloat("passiveCreditsKilled");
         state.totalCreditsKilled = nbt.getFloat("totalCreditsKilled");
+        state.direction = nbt.getFloat("direction");
         state.invasionProfile = nbt.getString("invasionProfile");
         state.invasionMobData = nbt.getString("invasionMobData");
         state.originPos = nbt.getIntArray("originPos");
@@ -124,6 +129,7 @@ public class StateSaverAndLoader extends PersistentState {
         state.passiveCreditsKilled = 0;
         state.passiveCredits = 0;
         state.totalCreditsKilled = 0;
+        state.direction = 0;
         state.invasionProfile = "";
         state.invasionMobData = "";
         state.originPos = new int[3];
@@ -147,6 +153,7 @@ public class StateSaverAndLoader extends PersistentState {
         data.putFloat("livingCredits", livingCredits);
         data.putFloat("passiveCreditsKilled", passiveCreditsKilled);
         data.putFloat("totalCreditsKilled", totalCreditsKilled);
+        data.putFloat("direction", direction);
         data.putString("invasionProfile", invasionProfile);
         data.putString("invasionMobData", invasionMobData);
         data.putIntArray("originPos", originPos);

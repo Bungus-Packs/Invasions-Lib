@@ -23,7 +23,7 @@ public class MobGroupConfig {
     }
 
     //record for storing data about a mob unit (a subgroup consisting of a single type of mob)
-    public record MobUnitData(String mobid, int minCount, int maxCount, int creditWeight) {
+    public record MobUnitData(String mobId, int minCount, int maxCount, int creditWeight) {
     }
 
     //store mob group data in hashmap keyed by name
@@ -161,11 +161,11 @@ public class MobGroupConfig {
                 List<MobUnitData> units = new ArrayList<>();
                 for (int j = 0; j < mobUnits.size(); j++) {
                     JsonObject unit = mobUnits.get(j).getAsJsonObject();
-                    String mobid = unit.get("mobid").getAsString();
+                    String mobId = unit.get("mobid").getAsString();
                     int minCount = unit.get(unit.has("count") ? "count" : "minCount").getAsInt();
                     int maxCount = unit.get(unit.has("count") ? "count" : "maxCount").getAsInt();
                     int creditWeight = unit.has("creditWeight") ? unit.get("creditWeight").getAsInt() : 1;
-                    units.add(new MobUnitData(mobid, minCount, maxCount, creditWeight));
+                    units.add(new MobUnitData(mobId, minCount, maxCount, creditWeight));
                 }
                 mobGroups.put(name, new MobGroupData(name, weight, cost, units));
             }

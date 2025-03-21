@@ -21,6 +21,7 @@ public class SpawnCommand {
                 .withIntensityFraction(0.02f)
                 .withMobData(InvasionMobConfig.invasionMobs.get("basicInvasion"))
                 .withProfile(InvasionProfileConfig.profiles.get("classic"))
+                .withDirection(0)
                 .build());
         //MobSpawner.spawnMobGroup(MobGroupConfig.mobGroups.get("zombieGroup"), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
         return 1;

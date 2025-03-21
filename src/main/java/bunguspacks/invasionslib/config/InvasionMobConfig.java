@@ -10,6 +10,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -148,5 +150,21 @@ public class InvasionMobConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static HashSet<String> getInvasionMobIds(InvasionMobData invasionMobData) {
+        HashSet<String> invasionMobIds = new HashSet<>();
+        for(InvasionMobGroupData passiveMobGroupData : invasionMobData.passiveMobs()) {
+            for (MobGroupConfig.MobUnitData mobUnitData : passiveMobGroupData.data().mobs()) {
+                invasionMobIds.add(mobUnitData.mobId());
+            }
+        }
+        for(InvasionMobGroupData waveMobGroupData : invasionMobData.waveMobs()) {
+            for (MobGroupConfig.MobUnitData mobUnitData : waveMobGroupData.data().mobs()) {
+                invasionMobIds.add(mobUnitData.mobId());
+            }
+        }
+        System.out.println(invasionMobIds);
+        return invasionMobIds;
     }
 }

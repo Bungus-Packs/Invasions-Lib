@@ -13,6 +13,7 @@ import java.util.Set;
 public class InvasionDirectorBuilder {
     private float creditTotal;
     private float intensity;
+    private float direction;
     private ServerWorld world;
     private BlockPos origin;
     private InvasionProfileConfig.DirectorProfileData profile;
@@ -25,6 +26,7 @@ public class InvasionDirectorBuilder {
         profile = null;
         mobData = null;
         origin = pos;
+        direction = 0;
     }
 
     public static InvasionDirectorBuilder create(ServerWorld w, BlockPos pos) {
@@ -53,6 +55,11 @@ public class InvasionDirectorBuilder {
 
     public InvasionDirectorBuilder withMobData(InvasionMobConfig.InvasionMobData data) {
         mobData = data;
+        return this;
+    }
+
+    public InvasionDirectorBuilder withDirection(float direction) {
+        this.direction = (float)Math.toRadians(direction);
         return this;
     }
 
@@ -90,6 +97,7 @@ public class InvasionDirectorBuilder {
             }
             mobData = out;
         }
-        return new InvasionDirector(creditTotal, intensity, world, origin, profile, mobData);
+        System.out.println("a");
+        return new InvasionDirector(creditTotal, intensity, world, origin, profile, mobData, direction);
     }
 }
