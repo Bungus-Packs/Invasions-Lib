@@ -56,41 +56,7 @@ public class InvasionMobSpawner implements Spawner {
             for (int j = 0; j < unitCounts.get(i); j++) {
                 spawnMob(unitData.get(i).mobId(), world, unitSpawnLocations.get(random.nextInt(unitCounts.get(i))), director, ((float) unitData.get(i).creditWeight() * totalCredits / unitCreditWeightSum), waveMob);
             }
+            unitSpawnLocations.clear();
         }
-
     }
-
-//    //black box function to generate a random position within a donut-shaped region around a center position
-//    private static BlockPos getBlockPosWithDistance(BlockPos pos, World world, int distanceMin, int distanceMax) {
-//        final Random random = world.random;
-//        double d = 0;
-//        double x = 0;
-//        double z = 0;
-//        BlockPos spawnPos = pos;
-//        // tries to find a location with 2 blocks of air using the world heightmap excluding leaves
-//        for (int i = 0; i < 15; i ++) {
-//            d = random.nextBetween(distanceMin, distanceMax);
-//            x = random.nextBetween(0, (int) d);
-//            if (x == 0) {
-//                z = d;
-//            } else {
-//                z = Math.sqrt((d * d) - (x * x));
-//                if (random.nextBoolean()) {
-//                    x = x * -1;
-//                }
-//            }
-//            if (random.nextBoolean()) {
-//                z = z * -1;
-//            }
-//            spawnPos = new BlockPos(pos.getX() + (int) x,
-//                    world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-//                            pos.getX() + (int) x,
-//                            pos.getZ() + (int) z),
-//                    pos.getZ() + (int) z);
-//            if (world.getBlockState(spawnPos).isAir() && world.getBlockState(spawnPos.up()).isAir())
-//                return spawnPos;
-//        }
-//        // if all that fails, it just returns the input position
-//        return spawnPos;
-//    }
 }

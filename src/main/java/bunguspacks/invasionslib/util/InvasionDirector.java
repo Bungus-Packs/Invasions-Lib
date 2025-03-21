@@ -52,8 +52,9 @@ public class InvasionDirector {
     private BlockPos origin;
     //list of which waves described by the profile have been spawned yet
     private List<Boolean> wavesFinished;
-    private final Random random;
+    //list of all valid spawn locations found by the spawn location finder
     private final List<BlockPos> allLocations;
+    private final Random random;
 
 
     //create director from all info; usable with builder
