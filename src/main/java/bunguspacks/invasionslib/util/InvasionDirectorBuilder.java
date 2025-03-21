@@ -9,6 +9,7 @@ import net.minecraft.util.math.random.Random;
 public class InvasionDirectorBuilder {
     private float creditTotal;
     private float intensity;
+    private float direction;
     private ServerWorld world;
     private BlockPos origin;
     private InvasionProfileConfig.DirectorProfileData profile;
@@ -21,6 +22,7 @@ public class InvasionDirectorBuilder {
         profile = null;
         mobData = null;
         origin = pos;
+        direction = 0;
     }
 
     public static InvasionDirectorBuilder create(ServerWorld w, BlockPos pos) {
@@ -52,6 +54,11 @@ public class InvasionDirectorBuilder {
         return this;
     }
 
+    public InvasionDirectorBuilder withDirection(float direction) {
+        this.direction = (float)Math.toRadians(direction);
+        return this;
+    }
+
     public InvasionDirector build() {
         final Random random = world.random;
         if (profile == null) {
@@ -78,6 +85,7 @@ public class InvasionDirectorBuilder {
             }
             mobData = out;
         }
-        return new InvasionDirector(creditTotal, intensity, world, origin, profile, mobData);
+        System.out.println("a");
+        return new InvasionDirector(creditTotal, intensity, world, origin, profile, mobData, direction);
     }
 }

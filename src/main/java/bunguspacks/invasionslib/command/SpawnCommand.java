@@ -3,9 +3,7 @@ package bunguspacks.invasionslib.command;
 import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
-import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.util.InvasionDirectorBuilder;
-import bunguspacks.invasionslib.world.spawner.MobSpawner;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -23,6 +21,7 @@ public class SpawnCommand {
                 .withIntensityFraction(0.01f)
                 .withMobData(InvasionMobConfig.invasionMobs.get(0))
                 .withProfile(InvasionProfileConfig.profiles.get(1))
+                .withDirection(0)
                 .build());
         //MobSpawner.spawnMobGroup(MobGroupConfig.mobGroups.get("zombieGroup"), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
         return 1;

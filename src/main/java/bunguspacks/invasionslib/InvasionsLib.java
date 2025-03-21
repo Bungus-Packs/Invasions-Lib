@@ -6,6 +6,7 @@ import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.event.ModWorldTickEvents;
 import bunguspacks.invasionslib.util.InvasionDirectorUpdater;
+import bunguspacks.invasionslib.world.spawner.SpawnLocationFinder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import org.slf4j.Logger;
@@ -30,7 +31,5 @@ public class InvasionsLib implements ModInitializer {
 
         LOGGER.info("Initializing mod events for " + MOD_ID);
         new ModWorldTickEvents(invasionDirectorUpdater);
-
-
     }
 }

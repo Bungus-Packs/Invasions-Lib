@@ -1,17 +1,16 @@
 package bunguspacks.invasionslib.util;
 
-import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
 import bunguspacks.invasionslib.config.InvasionProfileConfig;
-import bunguspacks.invasionslib.config.MobGroupConfig;
-import bunguspacks.invasionslib.world.spawner.MobSpawner;
+import bunguspacks.invasionslib.world.spawner.InvasionMobSpawner;
+import bunguspacks.invasionslib.world.spawner.SpawnLocationFinder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -31,10 +30,13 @@ public class InvasionDirector {
     private InvasionMobConfig.InvasionMobGroupData waveTopdeck;
     private final ServerWorld world;
     private BlockPos origin;
+    private final Random random;
+    private final List<BlockPos> allLocations;
 
 
-    public InvasionDirector(float creditTotal, float intensity, ServerWorld world, BlockPos pos, InvasionProfileConfig.DirectorProfileData profile, InvasionMobConfig.InvasionMobData mobData) {
+    public InvasionDirector(float creditTotal, float intensity, ServerWorld world, BlockPos pos, InvasionProfileConfig.DirectorProfileData profile, InvasionMobConfig.InvasionMobData mobData, float direction) {
         this.intensity = intensity;
+        System.out.println("b");
         creditsKilled = 0;
         passiveCreditsKilled = 0;
         livingCredits = 0;
@@ -46,8 +48,13 @@ public class InvasionDirector {
         waveCredits = creditTotal * profile.waveFraction();
         totalPassiveCredits = creditTotal - waveCredits;
         currentPassiveCredits = 0;
+        random = world.random;
         passiveTopdeck = getRandomGroup(false);
         waveTopdeck = getRandomGroup(true);
+        System.out.println("c");
+        allLocations = new ArrayList<>();
+        allLocations.addAll(SpawnLocationFinder.findAllLocations(this.mobData, this.world, origin, direction));
+        System.out.println("d");
     }
 
     //add a mob to the list of "invasion mobs"
@@ -89,7 +96,7 @@ public class InvasionDirector {
 
     public void trySpawn() {
         if (currentPassiveCredits >= passiveTopdeck.cost()) {
-            MobSpawner.spawnMobGroup(passiveTopdeck.data(), world, origin, this, false);
+            InvasionMobSpawner.spawnMobGroup(passiveTopdeck.data(), world, allLocations.get(random.nextInt(allLocations.size())), this, false);
             currentPassiveCredits -= passiveTopdeck.cost();
             passiveTopdeck = getRandomGroup(false);
         }
@@ -98,7 +105,7 @@ public class InvasionDirector {
     public void spawnWave(float credits) {
         for (int i = 0; i < 100; i++) {
             if (waveTopdeck.cost() <= credits) {
-                MobSpawner.spawnMobGroup(waveTopdeck.data(), world, origin, this, true);
+                InvasionMobSpawner.spawnMobGroup(waveTopdeck.data(), world, allLocations.get(random.nextInt(allLocations.size())), this, true);
                 credits -= waveTopdeck.cost();
             }
             waveTopdeck = getRandomGroup(true);
@@ -107,7 +114,6 @@ public class InvasionDirector {
 
     //generate a random mob group to spawn given weightings
     private InvasionMobConfig.InvasionMobGroupData getRandomGroup(boolean isWave) {
-        final Random random = world.random;
         float mobRandom = random.nextFloat();
         float chanceCumSum = 0f;
         InvasionMobConfig.InvasionMobGroupData out = null;
