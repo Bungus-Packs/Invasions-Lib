@@ -32,6 +32,7 @@ public class SpawnLocationFinder {
     //returns a set of all valid locations in scope for a given entity type
     private static HashSet<BlockPos> findLocations(EntityType<?> entityType, World world, BlockPos origin, float invasionDirection) {
         HashSet<BlockPos> validLocations = new HashSet<>();
+        //TODO: make the radii actually variable
         int maxRad = 40;
         int minRad = 20;
         // Finds each pair of coordinates in the band outside the minimum spawn radius and inside the maximum spawn radius
