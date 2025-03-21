@@ -6,6 +6,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
+import java.util.Map;
+import java.util.Set;
+
+//helper class to build invasion directors in a more modular way
 public class InvasionDirectorBuilder {
     private float creditTotal;
     private float intensity;
@@ -54,27 +58,35 @@ public class InvasionDirectorBuilder {
 
     public InvasionDirector build() {
         final Random random = world.random;
+        //if no profile is supplied, choose a weighted random one
         if (profile == null) {
             float profileRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionProfileConfig.DirectorProfileData out = null;
+            Set<Map.Entry<String, InvasionProfileConfig.DirectorProfileData>> set = InvasionProfileConfig.profiles.entrySet();
             int i = 0;
-            while (chanceCumSum < profileRandom) {
-                out = InvasionProfileConfig.profiles.get(i);
+            for (Map.Entry<String, InvasionProfileConfig.DirectorProfileData> entry : set) {
+                out = entry.getValue();
                 chanceCumSum += out.chance();
-                i++;
+                if (chanceCumSum > profileRandom) {
+                    break;
+                }
             }
             profile = out;
         }
+        //if no mob data is supplied, choose a weighted random one
         if (mobData == null) {
             float mobDataRandom = random.nextFloat();
             float chanceCumSum = 0f;
             InvasionMobConfig.InvasionMobData out = null;
+            Set<Map.Entry<String, InvasionMobConfig.InvasionMobData>> set = InvasionMobConfig.invasionMobs.entrySet();
             int i = 0;
-            while (chanceCumSum < mobDataRandom) {
-                out = InvasionMobConfig.invasionMobs.get(i);
+            for (Map.Entry<String, InvasionMobConfig.InvasionMobData> entry : set) {
+                out = entry.getValue();
                 chanceCumSum += out.chance();
-                i++;
+                if (chanceCumSum > mobDataRandom) {
+                    break;
+                }
             }
             mobData = out;
         }

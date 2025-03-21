@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class InvasionProfileConfig {
@@ -26,8 +27,35 @@ public class InvasionProfileConfig {
     public record DirectorWaveData(float progressPoint, float sizeFraction) {
     }
 
-    public static List<DirectorProfileData> profiles = new ArrayList<>();
+    //store invasion profiles in a hashmap keyed by profile name
+    public static HashMap<String, DirectorProfileData> profiles = new HashMap<>();
 
+    /*
+    CONFIG JSON FORMAT:
+    {
+        //List of invasion profiles
+        "profiles": [
+            {
+                "name": "classic", //Name of the profile; will be referenced internally and logged on invasion start
+                "weight": 5, //Relative weight of the profile to be selected for an invasion
+                "baselineDensity": 1.0, //NYI
+                "waveFraction": 0.4, //Fraction of the total credit budget for an invasion to be allocated to waves vs passive spawning
+                "waves": [ //List of the different waves for the profile to spawn
+                    {
+                        "progressPoint": 0.4, //How far through the passive mob kills the wave should spawn, where 0 is the beginning and 1 is the end
+                        "size": 2 //Relative sizes of the waves, if multiple exist.
+                    },
+                    {
+                        (another wave)
+                    },...
+                ]
+            },
+            {
+                (a different profile)
+            },...
+        ]
+    }
+    */
 
     //called on init
     public static void loadConfig() {
@@ -86,10 +114,8 @@ public class InvasionProfileConfig {
             JsonArray configProfiles = config.getAsJsonArray("profiles");
             profiles.clear();
 
-            //profile and wave weight/size stored internally as fractions
+            //find profile weight sum to store profile weights internally as probabilities
             int profileWeightSum = 0;
-
-            //iterate over profiles to determine total profile weighting
             for (int i = 0; i < configProfiles.size(); i++) {
                 JsonObject profile = configProfiles.get(i).getAsJsonObject();
                 profileWeightSum += profile.get("weight").getAsInt();
@@ -104,7 +130,7 @@ public class InvasionProfileConfig {
                 JsonArray waves = profile.getAsJsonArray("waves");
                 List<DirectorWaveData> waveData = new ArrayList<>();
 
-                //iterate over waves to determine total size
+                //iterate over waves to determine total size to store size internally as fractions
                 int waveSizeSum = 0;
                 for (int j = 0; j < waves.size(); j++) {
                     JsonObject wave = waves.get(j).getAsJsonObject();
@@ -117,7 +143,7 @@ public class InvasionProfileConfig {
                     float sizeFraction = ((float) wave.get("size").getAsInt()) / waveSizeSum;
                     waveData.add(new DirectorWaveData(progressPoint, sizeFraction));
                 }
-                profiles.add(new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
+                profiles.put(name, new DirectorProfileData(name, chance, baselineDensity, waveFraction, waveData));
             }
 
         } catch (Exception e) {
