@@ -1,12 +1,34 @@
 package bunguspacks.invasionslib.block.entity;
 
+import bunguspacks.invasionslib.InvasionsLib;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class InvasionBeaconBlockEntity extends BlockEntity {
+public class InvasionBeaconBlockEntity extends BlockEntity implements GeoBlockEntity {
+    private final AnimatableInstanceCache cache= GeckoLibUtil.createInstanceCache(this);
+    protected static final RawAnimation FLOAT_ANIM= RawAnimation.begin().thenLoop("crystalfloat");
+    protected static final RawAnimation FILL_ANIM=RawAnimation.begin().thenPlay("crystalfill");
+    protected static final RawAnimation EMPTY_ANIM=RawAnimation.begin().thenPlay("crystalempty");
+    protected static final RawAnimation STILL_ANIM=RawAnimation.begin().thenLoop("crystalstill");
+
+    private int active=0;
+
+
     public InvasionBeaconBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.INVASION_BEACON_BLOCK_ENTITY, pos, state);
     }
@@ -17,6 +39,8 @@ public class InvasionBeaconBlockEntity extends BlockEntity {
         }
     }
 
+
+
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
@@ -25,5 +49,31 @@ public class InvasionBeaconBlockEntity extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(
+                new AnimationController<>(this,"invasionBeaconAnimController", 10,
+                        state->state.setAndContinue(this.active>1?FLOAT_ANIM:STILL_ANIM))
+                        .triggerableAnim("crystalfill",FILL_ANIM)
+                        .triggerableAnim("crystalempty",EMPTY_ANIM));
+
+    }
+
+
+    public void toggleState(){
+        if(active>1){
+            triggerAnim("invasionBeaconAnimController","crystalempty");
+        }else{
+            triggerAnim("invasionBeaconAnimController","crystalfill");
+        }
+        active=active>2?0:active+1;
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }
