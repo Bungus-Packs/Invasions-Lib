@@ -1,7 +1,6 @@
 package bunguspacks.invasionslib.block.entity;
 
 import bunguspacks.invasionslib.InvasionsLib;
-import bunguspacks.invasionslib.network.TestNetworking;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
