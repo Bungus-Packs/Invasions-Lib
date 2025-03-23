@@ -65,9 +65,11 @@ public class InvasionBeaconBlock extends BlockWithEntity implements BlockEntityP
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
-        if (!world.isClient) {
+        BlockEntity be=world.getBlockEntity(pos);
+        if (!world.isClient&&be instanceof InvasionBeaconBlockEntity&&hand==Hand.MAIN_HAND) {
             ((InvasionBeaconBlockEntity)world.getBlockEntity(pos)).toggleState();
         }
+        world.updateListeners(pos,state,state,0);
         return super.onUse(state, world, pos, player, hand, hit);
     }
 }
