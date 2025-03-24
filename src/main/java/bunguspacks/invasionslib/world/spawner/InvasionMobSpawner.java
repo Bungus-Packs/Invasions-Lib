@@ -47,6 +47,10 @@ public class InvasionMobSpawner implements Spawner {
             }
             world.spawnEntity(mob);
             director.startTracking(mob, cost, waveMob);
+            if (mob instanceof PathAwareEntity){
+                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
+                goalSel.add(1, new WanderAroundFarGoal(((PathAwareEntity)mob), mob.speed, 0.01f));
+            }
         }
     }
 
