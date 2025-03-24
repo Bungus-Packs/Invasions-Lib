@@ -11,7 +11,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.WorldView;
 
-public class MobGoal extends MoveToTargetPosGoal {
+public class MobInvasionBeaconGoal extends MoveToTargetPosGoal {
 
     PathAwareEntity entity;
     int dementiaTolerance = 50;
@@ -31,12 +31,12 @@ public class MobGoal extends MoveToTargetPosGoal {
         }
     };
 
-    public MobGoal(PathAwareEntity entity){
+    public MobInvasionBeaconGoal(PathAwareEntity entity){
         super(entity, entity.getMovementSpeed(), -1);
         this.entity = entity;
     }
 
-    public MobGoal(PathAwareEntity entity, int targetRange){
+    public MobInvasionBeaconGoal(PathAwareEntity entity, int targetRange){
         super(entity, entity.getMovementSpeed(), targetRange);
         this.entity = entity;
         this.targetRange = targetRange;

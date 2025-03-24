@@ -1,9 +1,14 @@
 package bunguspacks.invasionslib.world.spawner;
 
 import bunguspacks.invasionslib.config.MobGroupConfig;
+import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -32,6 +37,10 @@ public class InvasionMobSpawner implements Spawner {
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);
             director.startTracking(mob, cost, waveMob);
+            if (mob instanceof PathAwareEntity){
+                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
+                goalSel.add(1, new WanderAroundFarGoal(((PathAwareEntity)mob), mob.speed, 0.01f));
+            }
         }
     }
 
