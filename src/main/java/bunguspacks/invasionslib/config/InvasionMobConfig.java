@@ -10,52 +10,90 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 
+//this config is for which mob groups invasions spawn
 public class InvasionMobConfig {
-    private static final File CONFIG = new File("config/invasion_mob_config.json");
+    private static final File CONFIG = new File("config/invasionslib/invasion_mob_config.json");
 
-    public record MobGroupData(String name, int weight, int cost, List<MobUnitData> mobs) {
+    //record for storing data about the mobs an invasion can spawn; builds the 'deck'
+    public record InvasionMobData(String name, float chance, List<InvasionMobGroupData> passiveMobs,
+                                  List<InvasionMobGroupData> waveMobs) {
     }
 
-    public record MobUnitData(String mobid, int minCount, int maxCount) {
+    //record for storing data about a mob group in the context of a specific invasion director
+    public record InvasionMobGroupData(MobGroupConfig.MobGroupData data, float chance, int cost) {
     }
 
-    public static final List<MobGroupData> mobGroups = new ArrayList<>();
+    //store sets of invasion mob data in a hashmap keyed by name
+    public static final HashMap<String, InvasionMobData> invasionMobs = new HashMap<>();
 
+    /*
+    CONFIG JSON FORMAT:
+    {
+        //List of invasion data
+        "invasions": [
+            {
+                "name": "basicInvasion", //name of the invasion to be internally referenced
+                "weight": 1, //weight of the invasion to be randomly selected from among available invasions
+                "mobGroups": [ //List of the different mob groups spawned by a specific invasion
+                    {
+                        "name": "basicGroup", //name of the mob group to be spawned; Must be a name defined in the mob_group_config.json
+                        "weight": 100, //OPTIONAL; override mob group defined weight for spawning
+                        "cost": 10, //OPTIONAL; override mob group defined cost
+                        "doPassiveSpawning": true, //OPTIONAL; whether the mob should be spawned by the passive director; defaults to true
+                        "doWaveSpawning": true //OPTIONAL; whether the mob should be spawned by the wave director; defaults to true
+                    },
+                    {
+                        (a different mob group)
+                    },...
+                ]
+            },
+            {
+                (a different invasion)
+            },...
+        ]
+    }
+    */
 
+    //called on init
     public static void loadConfig() {
+        //make default config if none exists
         if (!CONFIG.exists()) {
+            CONFIG.getParentFile().mkdirs();
             try (FileWriter writer = new FileWriter(CONFIG)) {
-                JsonArray basicMobGroupData = new JsonArray();
+                JsonArray invasionData = new JsonArray();
 
-                JsonObject basicMobGroup = new JsonObject();
-                basicMobGroup.addProperty("name", "zombieGroup");
-                basicMobGroup.addProperty("weight", 100);
-                basicMobGroup.addProperty("cost", 10);
+                JsonObject basicInvasion = new JsonObject();
+                basicInvasion.addProperty("name", "basicInvasion");
+                basicInvasion.addProperty("weight", 1);
+                JsonArray basicInvasionMobGroups = new JsonArray();
 
-                JsonArray basicMobUnitData = new JsonArray();
+                JsonObject basicInvasionBasicGroup = new JsonObject();
+                basicInvasionBasicGroup.addProperty("name", "basicGroup");
+                basicInvasionMobGroups.add(basicInvasionBasicGroup);
 
-                JsonObject zombieUnit = new JsonObject();
-                zombieUnit.addProperty("mobid", "minecraft:zombie");
-                zombieUnit.addProperty("minCount", 2);
-                zombieUnit.addProperty("maxCount", 4);
-                basicMobUnitData.add(zombieUnit);
+                JsonObject basicInvasionZombieGroup = new JsonObject();
+                basicInvasionZombieGroup.addProperty("name", "zombieGroup");
+                basicInvasionMobGroups.add(basicInvasionZombieGroup);
 
-                JsonObject skeletonUnit = new JsonObject();
-                skeletonUnit.addProperty("mobid", "minecraft:skeleton");
-                skeletonUnit.addProperty("minCount", 5);
-                skeletonUnit.addProperty("maxCount", 9);
-                basicMobUnitData.add(skeletonUnit);
+                JsonObject basicInvasionSkeletonGroup = new JsonObject();
+                basicInvasionSkeletonGroup.addProperty("name", "skeletonGroup");
+                basicInvasionMobGroups.add(basicInvasionSkeletonGroup);
 
-                basicMobGroup.add("units", basicMobUnitData);
+                JsonObject basicInvasionRavagerGroup = new JsonObject();
+                basicInvasionRavagerGroup.addProperty("name", "ravagerGroup");
+                basicInvasionRavagerGroup.addProperty("doPassiveSpawning", false);
+                basicInvasionMobGroups.add(basicInvasionRavagerGroup);
 
-
-                basicMobGroupData.add(basicMobGroup);
-
+                basicInvasion.add("mobGroups", basicInvasionMobGroups);
+                invasionData.add(basicInvasion);
 
                 JsonObject defaultConfig = new JsonObject();
-                defaultConfig.add("mobGroups", basicMobGroupData);
+                defaultConfig.add("invasions", invasionData);
 
                 new GsonBuilder().setPrettyPrinting().create().toJson(defaultConfig, writer);
             } catch (IOException e) {
@@ -65,26 +103,68 @@ public class InvasionMobConfig {
 
         try (FileReader reader = new FileReader(CONFIG)) {
             JsonObject config = new Gson().fromJson(reader, JsonObject.class);
-            JsonArray groups = config.getAsJsonArray("mobGroups");
-            mobGroups.clear();
-            for (int i = 0; i < groups.size(); i++) {
-                JsonObject group = groups.get(i).getAsJsonObject();
-                String name = group.get("name").getAsString();
-                int weight = group.get("weight").getAsInt();
-                int cost = group.get("cost").getAsInt();
-                JsonArray mobUnits = group.get("units").getAsJsonArray();
-                List<MobUnitData> units = new ArrayList<>();
-                for (int j = 0; j < mobUnits.size(); j++) {
-                    JsonObject unit = mobUnits.get(j).getAsJsonObject();
-                    String mobid = unit.get("mobid").getAsString();
-                    int minCount = unit.get("minCount").getAsInt();
-                    int maxCount = unit.get("maxCount").getAsInt();
-                    units.add(new MobUnitData(mobid, minCount, maxCount));
-                }
-                mobGroups.add(new MobGroupData(name, weight, cost, units));
+            JsonArray invasions = config.getAsJsonArray("invasions");
+            //get the sum of weights for invasions so it can be internally converted to probability
+            int totalWeights = 0;
+            for (int i = 0; i < invasions.size(); i++) {
+                JsonObject invasion = invasions.get(i).getAsJsonObject();
+                totalWeights += invasion.get("weight").getAsInt();
             }
+            for (int i = 0; i < invasions.size(); i++) {
+                JsonObject invasion = invasions.get(i).getAsJsonObject();
+                String name = invasion.get("name").getAsString();
+                float chance = ((float) invasion.get("weight").getAsInt()) / totalWeights;
+                List<InvasionMobGroupData> passive = new ArrayList<>();
+                List<InvasionMobGroupData> wave = new ArrayList<>();
+                int passiveWeightTotal = 0;
+                int waveWeightTotal = 0;
+                JsonArray invasionGroups = invasion.getAsJsonArray("mobGroups");
+                //grab weight totals for both passive and wave spawns so they can be internally converted to chance
+                for (int j = 0; j < invasionGroups.size(); j++) {
+                    JsonObject mobGroup = invasionGroups.get(j).getAsJsonObject();
+                    MobGroupConfig.MobGroupData data = MobGroupConfig.mobGroups.get(mobGroup.get("name").getAsString());
+                    if (!mobGroup.has("doPassiveSpawning") || mobGroup.get("doPassiveSpawning").getAsBoolean()) {
+                        passiveWeightTotal += data.weight();
+                    }
+                    if (!mobGroup.has("doWaveSpawning") || mobGroup.get("doWaveSpawning").getAsBoolean()) {
+                        waveWeightTotal += data.weight();
+                    }
+                }
+                //read both passive and wave spawn groups into records
+                for (int j = 0; j < invasionGroups.size(); j++) {
+                    JsonObject mobGroup = invasionGroups.get(j).getAsJsonObject();
+                    MobGroupConfig.MobGroupData data = MobGroupConfig.mobGroups.get(mobGroup.get("name").getAsString());
+                    int cost = mobGroup.has("cost") ? mobGroup.get("cost").getAsInt() : data.cost();
+                    if (!mobGroup.has("doPassiveSpawning") || mobGroup.get("doPassiveSpawning").getAsBoolean()) {
+                        float passiveChance = ((float) (mobGroup.has("weight") ? mobGroup.get("weight").getAsInt() : data.weight())) / passiveWeightTotal;
+                        passive.add(new InvasionMobGroupData(data, passiveChance, cost));
+                    }
+                    if (!mobGroup.has("doWaveSpawning") || mobGroup.get("doWaveSpawning").getAsBoolean()) {
+                        float waveChance = ((float) (mobGroup.has("weight") ? mobGroup.get("weight").getAsInt() : data.weight())) / waveWeightTotal;
+                        wave.add(new InvasionMobGroupData(data, waveChance, cost));
+                    }
+                }
+                invasionMobs.put(name, new InvasionMobData(name, chance, passive, wave));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static HashSet<String> getInvasionMobIds(InvasionMobData invasionMobData) {
+        HashSet<String> invasionMobIds = new HashSet<>();
+        for(InvasionMobGroupData passiveMobGroupData : invasionMobData.passiveMobs()) {
+            for (MobGroupConfig.MobUnitData mobUnitData : passiveMobGroupData.data().mobs()) {
+                invasionMobIds.add(mobUnitData.mobId());
+            }
+        }
+        for(InvasionMobGroupData waveMobGroupData : invasionMobData.waveMobs()) {
+            for (MobGroupConfig.MobUnitData mobUnitData : waveMobGroupData.data().mobs()) {
+                invasionMobIds.add(mobUnitData.mobId());
+            }
+        }
+        System.out.println(invasionMobIds);
+        return invasionMobIds;
     }
 }

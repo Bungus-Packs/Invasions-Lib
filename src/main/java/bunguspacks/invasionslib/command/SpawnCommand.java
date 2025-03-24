@@ -1,7 +1,9 @@
 package bunguspacks.invasionslib.command;
 
+import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.InvasionMobConfig;
-import bunguspacks.invasionslib.world.spawner.MobSpawner;
+import bunguspacks.invasionslib.config.InvasionProfileConfig;
+import bunguspacks.invasionslib.util.InvasionDirectorBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,8 +12,18 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class SpawnCommand {
+    //CLASS IS FOR TESTING, REMOVE LATER
+
     private static int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        MobSpawner.spawnMobGroup(InvasionMobConfig.mobGroups.get(0), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos());
+        InvasionsLib.invasionDirectorUpdater.addDirector(InvasionDirectorBuilder
+                .create(context.getSource().getWorld(), context.getSource().getPlayer().getBlockPos())
+                .withCreditTotal(1000)
+                .withIntensityFraction(0.02f)
+                .withMobData(InvasionMobConfig.invasionMobs.get("basicInvasion"))
+                .withProfile(InvasionProfileConfig.profiles.get("classic"))
+                .withDirection(0)
+                .build());
+        //MobSpawner.spawnMobGroup(MobGroupConfig.mobGroups.get("zombieGroup"), context.getSource().getPlayer().getServerWorld(), context.getSource().getPlayer().getBlockPos(), InvasionsLib.invasionDirectorUpdater.getDirectors().get(0));
         return 1;
     }
 
