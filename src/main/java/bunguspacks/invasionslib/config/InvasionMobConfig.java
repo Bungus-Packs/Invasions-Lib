@@ -164,7 +164,6 @@ public class InvasionMobConfig {
                 invasionMobIds.add(mobUnitData.mobId());
             }
         }
-        System.out.println(invasionMobIds);
         return invasionMobIds;
     }
 }

@@ -97,7 +97,6 @@ public class InvasionDirectorBuilder {
             }
             mobData = out;
         }
-        System.out.println("a");
         return new InvasionDirector(creditTotal, intensity, world, origin, profile, mobData, direction);
     }
 }

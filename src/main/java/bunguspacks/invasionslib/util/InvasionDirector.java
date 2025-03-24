@@ -79,7 +79,6 @@ public class InvasionDirector {
         this.direction = direction;
         allLocations = new ArrayList<>();
         allLocations.addAll(SpawnLocationFinder.findAllLocations(this.mobData, this.world, origin, direction));
-        System.out.println("d");
     }
 
     //add a mob to the list of "invasion mobs"

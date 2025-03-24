@@ -1,9 +1,15 @@
 package bunguspacks.invasionslib.world.spawner;
 
+import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.MobGroupConfig;
+import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -24,12 +30,21 @@ public class InvasionMobSpawner implements Spawner {
         return 0;
     }
 
-    //spawn mob in donut around specified position and notify director to start tracking it
+    //spawn mob around specified position and notify director to start tracking it
     public static void spawnMob(String mobId, ServerWorld world, BlockPos pos, InvasionDirector director, float cost, boolean waveMob) {
         EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobId));
         MobEntity mob = (MobEntity) mobType.create(world);
         if (mob != null) {
             mob.refreshPositionAndAngles(pos, 0, 0);
+            if (mob instanceof PathAwareEntity){
+                //lobotomy
+                mob.clearGoalsAndTasks();
+                mob.clearPositionTarget();
+                mob.setPositionTarget(new BlockPos(0, 118, 0), 3);
+                ((MobEntityAccessor) mob).getGoalSelector().add(1, new WanderAroundFarGoal((PathAwareEntity) mob, (double)1.0F));
+//                InvasionsLib.LOGGER.info(((MobEntityAccessor) mob).getGoalSelector().getRunningGoals().toArray().toString());
+//                InvasionsLib.LOGGER.info(((MobEntityAccessor) mob).getGoalSelector().getRunningGoals().findFirst().get().toString());
+            }
             world.spawnEntity(mob);
             director.startTracking(mob, cost, waveMob);
         }

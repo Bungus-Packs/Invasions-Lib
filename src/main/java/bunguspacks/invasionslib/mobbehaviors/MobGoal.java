@@ -13,12 +13,12 @@ import net.minecraft.world.WorldView;
 
 public class MobGoal extends MoveToTargetPosGoal {
 
-    PathAwareEntity entity;
-    int dementiaTolerance = 50;
-    int dementiaTimer = 0;
-    int targetRange = 0;
-    PositionImpl basePosition = new PositionImpl(0,77,0);
-    GoalSelector goalSelector;
+    private PathAwareEntity entity;
+    private int dementiaTolerance = 50;
+    private int dementiaTimer = 0;
+    private int targetRange = 0;
+    private PositionImpl basePosition = new PositionImpl(0,77,0);
+    private GoalSelector goalSelector;
     public AttackGoal fightPlayer;
     //Ideally range is infinite, but I am going to set a "reasonable number" in its place
     public MoveToTargetPosGoal attackBase = new MoveToTargetPosGoal(entity, entity.speed, 10000) {
