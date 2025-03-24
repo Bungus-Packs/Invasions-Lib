@@ -31,12 +31,12 @@ public class MobInvasionBeaconGoal extends MoveToTargetPosGoal {
         }
     };
 
-    public MobInvasionBeaconGoal(PathAwareEntity entity){
+    public MobInvasionBeaconGoal(PathAwareEntity entity) {
         super(entity, entity.getMovementSpeed(), -1);
         this.entity = entity;
     }
 
-    public MobInvasionBeaconGoal(PathAwareEntity entity, int targetRange){
+    public MobInvasionBeaconGoal(PathAwareEntity entity, int targetRange) {
         super(entity, entity.getMovementSpeed(), targetRange);
         this.entity = entity;
         this.targetRange = targetRange;
@@ -48,7 +48,7 @@ public class MobInvasionBeaconGoal extends MoveToTargetPosGoal {
     }
 
     @Override
-    public void start(){
+    public void start() {
         super.start();
         this.goalSelector = ((MobEntityAccessor)entity).getGoalSelector();
         //Mob should always have attacking base as priority 1
@@ -56,40 +56,13 @@ public class MobInvasionBeaconGoal extends MoveToTargetPosGoal {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         super.stop();
-
     }
 
     @Override
-    public void tick(){
+    public void tick() {
         super.tick();
-        //The Following code is entirely to handle the mob's targetting of the player
-        //If closest player is in targetting range of mob and not null, set target and start dementia timer
-        LivingEntity closestPlayer = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-        if (!(closestPlayer == null)){
-            dementiaTimer = dementiaTolerance;
-            entity.setTarget(closestPlayer);
-            if (!(goalSelector.getGoals().contains(fightPlayer))) {
-                fightPlayer = new AttackGoal(this.entity);
-                goalSelector.add(1, fightPlayer);
-            }
-        }
-        //If not forgor, target should still be set to the previous player
-        else {
-            dementiaTimer--;
-            //If forgor
-            if (!(dementiaTimer == 0)) {
-                //target beacon thing
-                if (goalSelector.getGoals().contains(fightPlayer)) {
-                    goalSelector.remove(fightPlayer);
-                }
-                entity.setPositionTarget(new BlockPos(0,77,0), 1000);
-                if (!(goalSelector.getGoals().contains(attackBase))) {
-                    goalSelector.add(0, attackBase);
-                }
-            }
-        }
     }
 
     @Override

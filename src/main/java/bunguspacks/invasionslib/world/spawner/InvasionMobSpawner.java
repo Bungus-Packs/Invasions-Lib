@@ -3,6 +3,7 @@ package bunguspacks.invasionslib.world.spawner;
 import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.mixin.MobEntityAccessor;
+import bunguspacks.invasionslib.mobbehaviors.MobInvasionPlayerGoal;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -35,22 +36,16 @@ public class InvasionMobSpawner implements Spawner {
         EntityType<?> mobType = Registries.ENTITY_TYPE.get(new Identifier(mobId));
         MobEntity mob = (MobEntity) mobType.create(world);
         if (mob != null) {
-            mob.refreshPositionAndAngles(pos, 0, 0);
             if (mob instanceof PathAwareEntity){
-                //lobotomy
+                //Debugging goalselector mixin [it works :O]
                 mob.clearGoalsAndTasks();
                 mob.clearPositionTarget();
-                mob.setPositionTarget(new BlockPos(0, 118, 0), 3);
-                ((MobEntityAccessor) mob).getGoalSelector().add(1, new WanderAroundFarGoal((PathAwareEntity) mob, (double)1.0F));
-//                InvasionsLib.LOGGER.info(((MobEntityAccessor) mob).getGoalSelector().getRunningGoals().toArray().toString());
-//                InvasionsLib.LOGGER.info(((MobEntityAccessor) mob).getGoalSelector().getRunningGoals().findFirst().get().toString());
+                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
+                goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2, 100));
             }
+            mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);
             director.startTracking(mob, cost, waveMob);
-            if (mob instanceof PathAwareEntity){
-                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
-                goalSel.add(1, new WanderAroundFarGoal(((PathAwareEntity)mob), mob.speed, 0.01f));
-            }
         }
     }
 
