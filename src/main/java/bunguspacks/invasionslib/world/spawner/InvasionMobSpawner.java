@@ -5,12 +5,15 @@ import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.mobbehaviors.MobInvasionPlayerGoal;
 import bunguspacks.invasionslib.util.InvasionDirector;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -20,6 +23,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.Spawner;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.selectors.TargetSelector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,7 +45,9 @@ public class InvasionMobSpawner implements Spawner {
                 mob.clearGoalsAndTasks();
                 mob.clearPositionTarget();
                 GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
-                goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2, 100));
+                goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2));
+                GoalSelector targetSel = ((MobEntityAccessor)mob).getTargetSelector();
+                targetSel.add(1, new ActiveTargetGoal(mob, PlayerEntity.class, true));
             }
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);

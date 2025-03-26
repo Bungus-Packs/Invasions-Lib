@@ -15,18 +15,15 @@ import net.minecraft.world.WorldView;
 
 public class MobInvasionPlayerGoal extends AttackGoal {
     PathAwareEntity entity;
-    int dementiaTolerance;
-    int dementiaTimer;
+
+    LivingEntity target;
     int targetRange;
-    GoalSelector goalSelector;
 
     //Overloaded Constructors
     public MobInvasionPlayerGoal(PathAwareEntity entity){
         super(entity);
         if (entity!=null){
             this.entity = entity;
-            dementiaTimer = 0;
-            dementiaTolerance = 50;
             targetRange = 6;
         }
     }
@@ -36,18 +33,6 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         if (entity != null){
             this.entity = entity;
             this.targetRange = targetRange;
-            dementiaTimer = 0;
-            dementiaTolerance = 50;
-        }
-    }
-
-    public MobInvasionPlayerGoal(PathAwareEntity entity, int targetRange, int dementiaTolerance){
-        super(entity);
-        if (entity != null){
-            this.entity = entity;
-            this.targetRange = targetRange;
-            dementiaTimer = 0;
-            this.dementiaTolerance = dementiaTolerance;
         }
     }
 
@@ -56,8 +41,8 @@ public class MobInvasionPlayerGoal extends AttackGoal {
     public boolean canStart() {
         //If there is a player in range, return true
         if (entity!=null){
-            LivingEntity closestPlayer = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-            return (closestPlayer != null)||(dementiaTimer<dementiaTolerance);
+            target = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
+            return (target != null);
         }
         return false;
     }
@@ -70,17 +55,27 @@ public class MobInvasionPlayerGoal extends AttackGoal {
     @Override
     public void stop(){
         super.stop();
-        dementiaTimer = 0;
+    }
+
+    @Override
+    public boolean shouldContinue() {
+        if (!this.target.isAlive()) {
+            return false;
+        } else if (this.entity.squaredDistanceTo(this.target) > targetRange*3) {
+            return false;
+        } else {
+            return !this.entity.getNavigation().isIdle() || this.canStart();
+        }
     }
 
     @Override
     public void tick(){
         if (entity!=null){
             LivingEntity closestPlayer = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-            entity.setTarget(closestPlayer);
-            dementiaTimer++;
+            if (closestPlayer != null){
+                entity.setTarget(closestPlayer);
+            }
         }
-        super.tick();
     }
 
     @Override
