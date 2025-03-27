@@ -47,7 +47,7 @@ public class InvasionMobSpawner implements Spawner {
                 GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
                 goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2));
                 GoalSelector targetSel = ((MobEntityAccessor)mob).getTargetSelector();
-                targetSel.add(1, new ActiveTargetGoal(mob, PlayerEntity.class, true));
+                targetSel.add(1, new ActiveTargetGoal(mob, PlayerEntity.class, false));
             }
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);

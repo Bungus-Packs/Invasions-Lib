@@ -15,7 +15,8 @@ import net.minecraft.world.WorldView;
 
 public class MobInvasionPlayerGoal extends AttackGoal {
     PathAwareEntity entity;
-
+    float dementiaTimer;
+    float ram = 50;
     LivingEntity target;
     int targetRange;
 
@@ -24,6 +25,7 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         super(entity);
         if (entity!=null){
             this.entity = entity;
+            dementiaTimer = 0;
             targetRange = 6;
         }
     }
@@ -32,6 +34,7 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         super(entity);
         if (entity != null){
             this.entity = entity;
+            dementiaTimer = 0;
             this.targetRange = targetRange;
         }
     }
@@ -42,7 +45,8 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         //If there is a player in range, return true
         if (entity!=null){
             target = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-            return (target != null);
+            entity.setTarget(target);
+            return (super.canStart());
         }
         return false;
     }
@@ -50,10 +54,12 @@ public class MobInvasionPlayerGoal extends AttackGoal {
     @Override
     public void start(){
         super.start();
+        dementiaTimer = 0;
     }
 
     @Override
     public void stop(){
+        entity.setAttacking(false);
         super.stop();
     }
 
@@ -71,9 +77,18 @@ public class MobInvasionPlayerGoal extends AttackGoal {
     @Override
     public void tick(){
         if (entity!=null){
+            super.tick();
             LivingEntity closestPlayer = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
             if (closestPlayer != null){
                 entity.setTarget(closestPlayer);
+                entity.setAttacking(true);
+                dementiaTimer = 0;
+            }
+            else {
+                dementiaTimer++;
+            }
+            if (dementiaTimer >= ram) {
+                entity.setAttacking(false);
             }
         }
     }
