@@ -15,8 +15,9 @@ import net.minecraft.world.WorldView;
 
 public class MobInvasionPlayerGoal extends AttackGoal {
     PathAwareEntity entity;
-    int dementiaTolerance;
-    int dementiaTimer;
+    float dementiaTimer;
+    float ram = 50;
+    LivingEntity target;
     int targetRange;
 
     //Overloaded Constructors
@@ -25,7 +26,6 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         if (entity!=null) {
             this.entity = entity;
             dementiaTimer = 0;
-            dementiaTolerance = 50;
             targetRange = 6;
         }
     }
@@ -34,9 +34,7 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         super(entity);
         if (entity != null) {
             this.entity = entity;
-            this.targetRange = targetRange;
             dementiaTimer = 0;
-            dementiaTolerance = 50;
         }
     }
 
@@ -45,8 +43,6 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         if (entity != null) {
             this.entity = entity;
             this.targetRange = targetRange;
-            dementiaTimer = 0;
-            this.dementiaTolerance = dementiaTolerance;
         }
     }
 
@@ -56,7 +52,8 @@ public class MobInvasionPlayerGoal extends AttackGoal {
         //If there is a player in range, return true
         if (entity!=null){
             LivingEntity closestTarget = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-            return (((closestTarget != null)||(dementiaTimer<dementiaTolerance))&&super.canStart());
+            entity.setTarget(closestTarget);
+            return (((closestTarget != null)||(dementiaTimer<ram))&&super.canStart());
         }
         return false;
     }
@@ -64,22 +61,42 @@ public class MobInvasionPlayerGoal extends AttackGoal {
     @Override
     public void start() {
         super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
         dementiaTimer = 0;
     }
 
+    public void stop(){
+        entity.setAttacking(false);
+        super.stop();
+    }
+
     @Override
-    public void tick() {
-        if (entity!=null) {
-            LivingEntity closestTarget = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
-            entity.setTarget(closestTarget);
-            dementiaTimer++;
+    public boolean shouldContinue() {
+        if (!this.target.isAlive()) {
+            return false;
+        } else if (this.entity.squaredDistanceTo(this.target) > targetRange*3) {
+            return false;
+        } else {
+            return !this.entity.getNavigation().isIdle() || this.canStart();
         }
-        super.tick();
+    }
+
+    @Override
+    public void tick(){
+        if (entity!=null){
+            super.tick();
+            LivingEntity closestPlayer = this.entity.getWorld().getClosestEntity(PlayerEntity.class, TargetPredicate.DEFAULT, null, entity.getX(), entity.getY(), entity.getZ(), new Box(entity.getBlockPos()).expand(targetRange));
+            if (closestPlayer != null){
+                entity.setTarget(closestPlayer);
+                entity.setAttacking(true);
+                dementiaTimer = 0;
+            }
+            else {
+                dementiaTimer++;
+            }
+            if (dementiaTimer >= ram) {
+                entity.setAttacking(false);
+            }
+        }
     }
 
     @Override

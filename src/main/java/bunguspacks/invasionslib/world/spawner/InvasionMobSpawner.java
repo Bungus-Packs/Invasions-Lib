@@ -1,12 +1,12 @@
 package bunguspacks.invasionslib.world.spawner;
 
-import bunguspacks.invasionslib.InvasionsLib;
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.mobbehaviors.MobInvasionPlayerGoal;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
@@ -14,8 +14,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
 import net.minecraft.world.spawner.Spawner;
 import org.jetbrains.annotations.Nullable;
 
