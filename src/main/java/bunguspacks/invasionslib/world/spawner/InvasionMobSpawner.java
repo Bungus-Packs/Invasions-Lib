@@ -6,9 +6,7 @@ import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.mobbehaviors.MobInvasionPlayerGoal;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
@@ -24,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class InvasionMobSpawner implements Spawner {
     @Override
@@ -37,11 +36,20 @@ public class InvasionMobSpawner implements Spawner {
         MobEntity mob = (MobEntity) mobType.create(world);
         if (mob != null) {
             if (mob instanceof PathAwareEntity){
-                //Debugging goalselector mixin [it works :O]
+                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
+                Set<PrioritizedGoal> goalsList = goalSel.getGoals();
+                Set<PrioritizedGoal> whitelistedGoals = new HashSet<PrioritizedGoal>();
+                for (PrioritizedGoal goal:goalsList){
+                    if (goal.getGoal() instanceof AttackGoal || goal.getGoal() instanceof ProjectileAttackGoal || goal.getGoal() instanceof MeleeAttackGoal){
+                        whitelistedGoals.add(goal);
+                    }
+                }
                 mob.clearGoalsAndTasks();
                 mob.clearPositionTarget();
-                GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
                 goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2, 100));
+                for (PrioritizedGoal goal: whitelistedGoals){
+                    goalSel.add(goal.getPriority(), goal.getGoal());
+                }
             }
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);
