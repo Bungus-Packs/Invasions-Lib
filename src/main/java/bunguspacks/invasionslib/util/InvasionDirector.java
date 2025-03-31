@@ -114,6 +114,7 @@ public class InvasionDirector {
         }
         //if all waves are finished and the passive director has finished spawning, end the invasion
         if (allWavesFinished && creditsKilled >= (waveCredits + passiveCredits)) {
+            SpawnLocationFinder.clearCache();
             InvasionsLib.LOGGER.info("Finished invasion.");
             InvasionsLib.invasionDirectorUpdater.removeDirector();
         }

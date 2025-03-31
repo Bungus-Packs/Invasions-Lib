@@ -1,7 +1,6 @@
 package bunguspacks.invasionslib.world.spawner;
 
 import bunguspacks.invasionslib.config.InvasionMobConfig;
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -10,27 +9,32 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.function.Predicate;
 
 public class SpawnLocationFinder {
 
     private static HashMap<EntityType<?>, HashSet<BlockPos>> entityTypeLocationsMap = new HashMap<>();
-    private float invasionDirection;
-    private World world;
-    private BlockPos origin;
+    private static float invasionDirection;
+    private static BlockPos origin;
+    private static World world;
 
     //finds all valid spawn locations for every entity type in an invasion, and returns a set of all locations found
     public static HashSet<BlockPos> findAllLocations(InvasionMobConfig.InvasionMobData invasionMobData, World world, BlockPos origin, float invasionDirection) {
         // Maps all valid spawn locations to entity types
-        for (String s : InvasionMobConfig.getInvasionMobIds(invasionMobData)) {
-            EntityType<?> entityType = EntityType.get(s).get();
-            entityTypeLocationsMap.put(entityType, findLocations(entityType, world, origin, invasionDirection));
+        if(entityTypeLocationsMap.isEmpty())
+        {
+            SpawnLocationFinder.invasionDirection = invasionDirection;
+            SpawnLocationFinder.origin = origin;
+            SpawnLocationFinder.world = world;
+            for (String s : InvasionMobConfig.getInvasionMobIds(invasionMobData)) {
+                EntityType<?> entityType = EntityType.get(s).get();
+                entityTypeLocationsMap.put(entityType, findLocations(entityType));
+            }
         }
         return getAllLocations();
     }
 
     //returns a set of all valid locations in scope for a given entity type
-    private static HashSet<BlockPos> findLocations(EntityType<?> entityType, World world, BlockPos origin, float invasionDirection) {
+    private static HashSet<BlockPos> findLocations(EntityType<?> entityType) {
         HashSet<BlockPos> validLocations = new HashSet<>();
         //TODO: make the radii actually variable
         int maxRad = 40;
@@ -82,5 +86,20 @@ public class SpawnLocationFinder {
         return nearbyLocations;
     }
 
+    public static float getInvasionDirection() {
+        return invasionDirection;
+    }
+
+    public static BlockPos getOrigin() {
+        return origin;
+    }
+
+    public static World getWorld() {
+        return world;
+    }
+
+    public static void clearCache() {
+        entityTypeLocationsMap.clear();
+    }
 
 }
