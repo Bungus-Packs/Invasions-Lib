@@ -59,8 +59,10 @@ public class InvasionBeaconBlock extends BlockWithEntity implements BlockEntityP
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.INVASION_BEACON_BLOCK_ENTITY,
-                (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        if(!world.isClient()) {
+            return checkType(type, ModBlockEntities.INVASION_BEACON_BLOCK_ENTITY,
+                    (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        }return super.getTicker(world, state, type);
     }
 
     @Override

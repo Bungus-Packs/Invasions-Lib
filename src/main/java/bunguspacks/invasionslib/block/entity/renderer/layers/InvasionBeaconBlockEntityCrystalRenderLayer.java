@@ -24,6 +24,6 @@ public class InvasionBeaconBlockEntityCrystalRenderLayer extends GeoRenderLayer<
         bakedModel.getBone("beads").get().setHidden(true);
         bakedModel.getBone("base").get().setHidden(true);
         bakedModel.getBone("water").get().setHidden(true);
-        getRenderer().reRender(bakedModel,poseStack,bufferSource,animatable,layer,bufferSource.getBuffer(layer),partialTick,packedLight,packedOverlay,0,0.5f,1,0.7f);
+        getRenderer().reRender(bakedModel,poseStack,bufferSource,animatable,layer,bufferSource.getBuffer(layer),partialTick,packedLight,packedOverlay,1f,0.5f,0f,0.7f);
     }
 }

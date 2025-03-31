@@ -27,25 +27,25 @@ public class InvasionsLib implements ModInitializer {
         LOGGER.info("Initializing commands for " + MOD_ID);
         CommandRegistrationCallback.EVENT.register(SpawnCommand::register);
 
-        LOGGER.info("Initializing mod configs for " + MOD_ID);
+        LOGGER.info("Loading configs for " + MOD_ID);
         MobGroupConfig.loadConfig();
         InvasionProfileConfig.loadConfig();
         InvasionMobConfig.loadConfig();
 
-        LOGGER.info("Initializing mod events for " + MOD_ID);
+        LOGGER.info("Initializing events for " + MOD_ID);
         new ModWorldTickEvents(invasionDirectorUpdater);
 
 
-        LOGGER.info("Registering mod items for " + MOD_ID);
+        LOGGER.info("Registering items for " + MOD_ID);
         ModItems.registerModItems();
 
-        LOGGER.info("Registering mod blocks for " + MOD_ID);
+        LOGGER.info("Registering blocks for " + MOD_ID);
         ModBlocks.registerModBlocks();
 
-        LOGGER.info("Registering mod item groups for " + MOD_ID);
+        LOGGER.info("Registering item groups for " + MOD_ID);
         ModItemGroups.registerItemGroups();
 
-        LOGGER.info("Registering mod block entities for " + MOD_ID);
+        LOGGER.info("Registering block entities for " + MOD_ID);
         ModBlockEntities.registerBlockEntities();
     }
 }
