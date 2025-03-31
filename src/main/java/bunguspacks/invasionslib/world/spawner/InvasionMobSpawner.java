@@ -4,6 +4,7 @@ import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.mixin.MobEntityAccessor;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
@@ -38,20 +39,25 @@ public class InvasionMobSpawner implements Spawner {
                 GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
                 GoalSelector targetSel = ((MobEntityAccessor) mob).getTargetSelector();
                 Set<PrioritizedGoal> goalsList = goalSel.getGoals();
-                Set<PrioritizedGoal> whitelistedGoals = new HashSet<PrioritizedGoal>();
-                for (PrioritizedGoal goal:goalsList){
-                    if (goal.getGoal() instanceof AttackGoal || goal.getGoal() instanceof ProjectileAttackGoal || goal.getGoal() instanceof MeleeAttackGoal){
-                        whitelistedGoals.add(goal);
+                Set<PrioritizedGoal> newGoals = new HashSet<PrioritizedGoal>();
+                for (PrioritizedGoal goal:goalsList) {
+                    //Melee means we use our melee attack goal
+                    //in this example, we are doubling the move speed
+                    if (goal.getGoal() instanceof MeleeAttackGoal) {
+                        newGoals.add(new PrioritizedGoal(1, new MeleeAttackGoal((PathAwareEntity)mob, 2, false)));
+                    }
+                    //custom attack goals stay
+                    else if (goal.getGoal() instanceof AttackGoal) {
+                        newGoals.add(goal);
                     }
                 }
                 mob.clearGoalsAndTasks();
                 mob.clearPositionTarget();
                 targetSel.add(1, new ActiveTargetGoal(mob, PlayerEntity.class, false));
                 targetSel.add(2, new ActiveTargetGoal(mob, IronGolemEntity.class, false));
-                goalSel.add(1, new MeleeAttackGoal((PathAwareEntity)mob, 2, 100, mob.getNavigation().isIdle()));
-//                for (PrioritizedGoal goal: whitelistedGoals){
-//                    goalSel.add(goal.getPriority(), goal.getGoal());
-//                }
+                for (PrioritizedGoal goal: newGoals){
+                    goalSel.add(goal.getPriority(), goal.getGoal());
+                }
             }
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);
