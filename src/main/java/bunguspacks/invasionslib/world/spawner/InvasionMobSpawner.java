@@ -2,13 +2,14 @@ package bunguspacks.invasionslib.world.spawner;
 
 import bunguspacks.invasionslib.config.MobGroupConfig;
 import bunguspacks.invasionslib.mixin.MobEntityAccessor;
-import bunguspacks.invasionslib.mobbehaviors.MobInvasionPlayerGoal;
 import bunguspacks.invasionslib.util.InvasionDirector;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -35,6 +36,7 @@ public class InvasionMobSpawner implements Spawner {
         if (mob != null) {
             if (mob instanceof PathAwareEntity){
                 GoalSelector goalSel = ((MobEntityAccessor)mob).getGoalSelector();
+                GoalSelector targetSel = ((MobEntityAccessor) mob).getTargetSelector();
                 Set<PrioritizedGoal> goalsList = goalSel.getGoals();
                 Set<PrioritizedGoal> whitelistedGoals = new HashSet<PrioritizedGoal>();
                 for (PrioritizedGoal goal:goalsList){
@@ -44,10 +46,12 @@ public class InvasionMobSpawner implements Spawner {
                 }
                 mob.clearGoalsAndTasks();
                 mob.clearPositionTarget();
-                goalSel.add(1, new MobInvasionPlayerGoal((PathAwareEntity)mob, 2, 100));
-                for (PrioritizedGoal goal: whitelistedGoals){
-                    goalSel.add(goal.getPriority(), goal.getGoal());
-                }
+                targetSel.add(1, new ActiveTargetGoal(mob, PlayerEntity.class, false));
+                targetSel.add(2, new ActiveTargetGoal(mob, IronGolemEntity.class, false));
+                goalSel.add(1, new MeleeAttackGoal((PathAwareEntity)mob, 2, 100, mob.getNavigation().isIdle()));
+//                for (PrioritizedGoal goal: whitelistedGoals){
+//                    goalSel.add(goal.getPriority(), goal.getGoal());
+//                }
             }
             mob.refreshPositionAndAngles(pos, 0, 0);
             world.spawnEntity(mob);
