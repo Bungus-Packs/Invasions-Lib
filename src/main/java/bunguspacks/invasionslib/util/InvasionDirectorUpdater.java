@@ -59,7 +59,9 @@ public class InvasionDirectorUpdater {
 
     //if a progress bar exists, broadcast it to all players and set the content
     public void updateProgressBar() {
-        if (progressBar != null) {
+        if(progressBar==null) {
+            progressBar = new ServerBossBar(Text.translatable("progressbar.invasion"), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
+        }else{
             for (ServerPlayerEntity player : world.getPlayers()) {
                 if (!progressBar.getPlayers().contains(player)) {
                     progressBar.addPlayer(player);
