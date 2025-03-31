@@ -59,14 +59,16 @@ public class InvasionDirectorUpdater {
 
     //if a progress bar exists, broadcast it to all players and set the content
     public void updateProgressBar() {
-        if (progressBar != null) {
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                if (!progressBar.getPlayers().contains(player)) {
-                    progressBar.addPlayer(player);
-                }
-            }
-            progressBar.setPercent(dir.getCreditsKilled() / (dir.getPassiveCredits() + dir.getWaveCredits()));
+        if (progressBar == null) {
+            progressBar = new ServerBossBar(Text.translatable("progressbar.invasion"), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
         }
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            if (!progressBar.getPlayers().contains(player)) {
+                progressBar.addPlayer(player);
+            }
+        }
+        progressBar.setPercent(dir.getCreditsKilled() / (dir.getPassiveCredits() + dir.getWaveCredits()));
+
     }
 
     public void playProgressBarCompletion() {
